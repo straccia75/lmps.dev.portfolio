@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Portafolio personal y proyectos en desarrollo.',
   // ESTO ES LO QUE CAMBIA EL ICONO DE LA PESTAÑA
   icons: {
-    icon: '/logo2.png',
+    icon: '/logo1.png',
   },
 };
 
