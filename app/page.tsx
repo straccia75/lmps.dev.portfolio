@@ -12,7 +12,7 @@ export default function PortfolioPage() {
   useEffect(() => {
     setIsMounted(true);
     // Cambia esta fecha por la fecha real en la que planeas lanzar (Año-Mes-Día)
-    const targetDate = new Date("2026-11-01T00:00:00").getTime();
+    const targetDate = new Date("2026-09-21T00:00:00").getTime();
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
