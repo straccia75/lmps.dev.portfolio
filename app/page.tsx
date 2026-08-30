@@ -43,7 +43,7 @@ export default function PortfolioPage() {
 
       {/* Header - Logo */}
       <header className="relative z-10 w-full pt-6 flex justify-center shrink-0">
-        <div className="relative w-56 h-20 sm:w-72 sm:h-24">
+        <div className="relative w-96 h-40 sm:w-[500px] sm:h-[200px]">
           <Image 
             src="/logo1.png" 
             alt="Brand Logo" 
