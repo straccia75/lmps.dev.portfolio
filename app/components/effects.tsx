@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
   - reveals every `.reveal` element when it scrolls into view
   - moves the light inside every `.spotlight` card with the pointer
   - draws the scroll progress bar at the top of the page
+  - publishes the scroll position as --scroll for the parallax background
 */
 export function Effects() {
   const pathname = usePathname();
@@ -48,13 +49,17 @@ export function Effects() {
     return () => document.removeEventListener("pointermove", onMove);
   }, []);
 
-  // Scroll progress
+  // Scroll progress + parallax
   useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let frame = 0;
     const update = () => {
       frame = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const root = document.documentElement;
+      const max = root.scrollHeight - window.innerHeight;
       const progress = max > 0 ? window.scrollY / max : 0;
+      // Parallax: background layers read --scroll (see Backdrop in site.tsx)
+      if (!reduceMotion) root.style.setProperty("--scroll", String(Math.round(window.scrollY)));
       if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
     };
     const onScroll = () => {

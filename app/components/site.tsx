@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Effects } from "./effects";
+import { Header } from "./header";
 
 /* Stagger helper for .enter / .reveal: delay(120) */
 export function delay(ms: number) {
@@ -12,14 +12,14 @@ export const WHATSAPP_URL =
 
 export const LINKEDIN_URL = "https://www.linkedin.com/in/luigi-straccia-80858a241";
 
-/* Page frame: background, header, footer. Every page uses this. */
+/* Page frame: background, fixed header, footer. Every page uses this. */
 export function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative min-h-dvh w-full overflow-x-hidden bg-[#07070a] text-zinc-400 font-sans antialiased selection:bg-sky-500/30 selection:text-white">
+    <div className="relative min-h-dvh w-full overflow-x-clip bg-[#07070a] text-zinc-400 font-sans antialiased selection:bg-sky-500/30 selection:text-white">
       <Effects />
       <Backdrop />
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-5 sm:px-8">
-        <Header />
+      <Header />
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-16 sm:px-8 sm:pt-20 lg:px-12">
         <main>{children}</main>
         <Footer />
       </div>
@@ -27,64 +27,59 @@ export function PageShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Backdrop() {
-  return (
-    <div className="pointer-events-none fixed inset-0">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.12),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.10),transparent_50%)]" />
-      <div className="absolute -top-24 left-1/2 h-[520px] w-[820px] -translate-x-1/2">
-        <div className="drift-a h-full w-full rounded-full bg-sky-500/10 blur-[120px]" />
-      </div>
-      <div className="drift-b absolute bottom-[-20%] right-[-10%] h-[420px] w-[420px] rounded-full bg-violet-600/15 blur-[110px]" />
-      <div
-        className="absolute inset-0 opacity-[0.22]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "72px 72px",
-          maskImage: "radial-gradient(ellipse at center, black 30%, transparent 78%)",
-        }}
-      />
-    </div>
-  );
+/*
+  Parallax background. Effects writes the scroll position to --scroll;
+  each layer moves at its own speed, which creates depth.
+*/
+function layer(speed: number) {
+  return { transform: `translate3d(0, calc(var(--scroll, 0) * ${speed}px), 0)` } as React.CSSProperties;
 }
 
-const NAV = [
-  { href: "/#work", label: "Work" },
-  { href: "/#about", label: "About" },
-  { href: "/#contact", label: "Contact" },
-];
-
-function Header() {
+function Backdrop() {
   return (
-    <header className="enter flex items-center justify-between gap-4 pt-5 sm:pt-7">
-      <Link href="/" aria-label="LMPS.dev home" className="relative h-14 w-40 sm:h-16 sm:w-52 scale-[2.25]">
-        <Image
-          src="/logo2.png"
-          alt="LMPS.dev"
-          fill
-          sizes="(max-width: 640px) 160px, 208px"
-          className="object-contain object-left"
-          priority
+    <div className="pointer-events-none fixed inset-0 overflow-hidden">
+      {/* base tint */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.12),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.10),transparent_50%)]" />
+
+      {/* far layer: grid, slowest */}
+      <div className="absolute inset-x-0 -top-[20%] h-[160%] will-change-transform" style={layer(-0.06)}>
+        <div
+          className="h-full w-full opacity-[0.22]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+            backgroundSize: "72px 72px",
+            maskImage: "radial-gradient(ellipse at 50% 35%, black 25%, transparent 70%)",
+          }}
         />
-      </Link>
-      <nav className="relative z-10 flex items-center gap-1 rounded-full border border-white/10 bg-[#0c0c11]/80 p-1 backdrop-blur-md">
-        {NAV.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="rounded-full px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-400 transition-colors duration-300 hover:bg-white/[0.08] hover:text-white"
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-    </header>
+      </div>
+
+      {/* mid layer: sky light */}
+      <div className="absolute -top-24 left-1/2 h-[560px] w-[900px] -translate-x-1/2 will-change-transform" style={layer(-0.18)}>
+        <div className="drift-a h-full w-full rounded-full bg-sky-500/10 blur-[120px]" />
+      </div>
+
+      {/* mid layer: orbit rings */}
+      <div className="absolute right-[-12%] top-[8%] h-[720px] w-[720px] will-change-transform" style={layer(-0.3)}>
+        <div className="spin-slow h-full w-full rounded-full border border-white/[0.05]" />
+        <div className="spin-slower absolute inset-[14%] rounded-full border border-dashed border-sky-300/[0.07]" />
+        <div className="absolute inset-[30%] rounded-full border border-white/[0.04]" />
+      </div>
+
+      {/* near layer: violet light, moves against the scroll */}
+      <div className="absolute bottom-[-25%] right-[-10%] h-[520px] w-[520px] will-change-transform" style={layer(0.12)}>
+        <div className="drift-b h-full w-full rounded-full bg-violet-600/15 blur-[110px]" />
+      </div>
+
+      {/* noise vignette */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.55))]" />
+    </div>
   );
 }
 
 function Footer() {
   return (
-    <footer className="mt-24 flex flex-col items-center justify-between gap-2 border-t border-white/5 py-6 text-[11px] tracking-wide text-zinc-600 sm:flex-row">
+    <footer className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-white/5 py-6 text-[11px] tracking-wide text-zinc-600 sm:flex-row">
       <span>© {new Date().getFullYear()} Luigi Straccia</span>
       <span>Software & data engineering</span>
     </footer>
