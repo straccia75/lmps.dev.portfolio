@@ -1,9 +1,4 @@
-export type System = {
-  id: string;
-  title: string;
-  intro: string;
-  points: string[];
-};
+import type { CaseStudy, System } from "../types";
 
 export const SUMMARY =
   "ProSpeak teaches English to Spanish-speaking professionals through levelled lessons (A1–B2) and real-time voice simulations in which the student interviews an AI character, such as a patient. Around the learning product I built the full business layer: a CRM for the sales team, an automated acquisition funnel, Stripe billing, channel analytics and a certification system.";
@@ -233,3 +228,64 @@ export const DECISIONS = [
     why: "Zero operating cost, single-server deploys and trivial backups, with the data layer ready to move to PostgreSQL when volume justifies it.",
   },
 ];
+
+/* ---------- Assembled case study ---------- */
+
+const byId = new Map(SYSTEMS.map((s) => [s.id, s]));
+const pick = (ids: string[]) => ids.map((id) => byId.get(id)).filter((s): s is System => Boolean(s));
+
+const SECURITY_SYSTEM: System = {
+  id: "security",
+  title: "Security audit and hardening",
+  intro: "A full review of the platform, followed by hardening.",
+  points: SECURITY,
+};
+
+export const prospeak: CaseStudy = {
+  slug: "prospeak",
+  category: "software",
+  name: "ProSpeak",
+  tagline: "English training SaaS with real-time voice AI, a sales CRM and automated billing.",
+  summary: SUMMARY,
+
+  card: {
+    kicker: "SaaS · Founder & sole engineer",
+    blurb: "English training platform for professionals, with the full business operation built around it.",
+    points: [
+      "Sales CRM with lead attribution and automatic commissions",
+      "Self-serve and rep-led funnels, measured side by side",
+      "Stripe billing that activates accounts and converts leads in one flow",
+      "Real-time voice AI with server-side usage metering",
+    ],
+    tags: ["Next.js", "TypeScript", "FastAPI", "SQLAlchemy", "WebSockets", "Stripe", "Gemini Live"],
+  },
+
+  meta: META,
+  facts: FACTS,
+
+  flow: {
+    title: "How a customer moves through the system",
+    intro:
+      "Two entry channels, a sales rep's trial link or a self-serve landing page, lead to the same pipeline. Every step below is a rule I defined and then implemented.",
+    steps: JOURNEY,
+  },
+
+  architecture: {
+    title: "One backend owns everything of value",
+    paragraphs: ARCHITECTURE,
+    stack: STACK,
+  },
+
+  groups: GROUPS.map((g) => ({
+    name: g.name,
+    description: g.description,
+    systems: g.name === "Money and trust" ? [...pick(g.ids), SECURITY_SYSTEM] : pick(g.ids),
+  })),
+
+  decisions: DECISIONS,
+
+  cta: {
+    title: "Need a system like this?",
+    text: "CRMs, sales funnels, payment flows and internal tools, built around how your business actually works.",
+  },
+};

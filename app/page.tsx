@@ -1,16 +1,8 @@
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Lock, MessageCircle } from "lucide-react";
-import { delay, LINKEDIN_URL, PageShell, PrimaryButton, SecondaryButton, Section, Tag, WHATSAPP_URL } from "./components/site";
+import { ArrowRight, ArrowUpRight, MessageCircle } from "lucide-react";
+import { delay, LINKEDIN_URL, PageShell, PrimaryButton, SecondaryButton, Section, WHATSAPP_URL } from "./components/site";
+import { WorkTabs } from "./components/work-tabs";
+import { CATEGORIES, PROJECTS } from "./work/registry";
 import { HeroSystem } from "./components/hero-system";
-
-const PROSPEAK_POINTS = [
-  "Sales CRM with lead attribution and automatic commissions",
-  "Self-serve and rep-led funnels, measured side by side",
-  "Stripe billing that activates accounts and converts leads in one flow",
-  "Real-time voice AI with server-side usage metering",
-];
-
-const PROSPEAK_TAGS = ["Next.js", "TypeScript", "FastAPI", "SQLAlchemy", "WebSockets", "Stripe", "Gemini Live"];
 
 export default function Home() {
   return (
@@ -46,62 +38,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. Work, organised by area */}
-      <Section id="work" label="Work" title="Selected work">
-        <div className="space-y-12">
-          {/* Area: Software development */}
-          <div>
-            <AreaHeader index="A" name="Software development" count="1 project" />
-
-            <Link
-              href="/work/prospeak"
-              style={delay(100)}
-              className="reveal spotlight group block rounded-[1.5rem] border border-white/10 bg-[#0c0c11]/80 p-6 backdrop-blur-xl transition-[border-color,box-shadow,translate] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-sky-400/30 hover:shadow-[0_30px_80px_-30px_rgba(56,189,248,0.35)] sm:p-8"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">SaaS · Founder & sole engineer</p>
-                  <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">ProSpeak</h3>
-                  <p className="mt-2 max-w-xl text-[15px] leading-relaxed">
-                    English training platform for professionals, with the full business operation built around it.
-                  </p>
-                </div>
-                <ArrowUpRight className="h-5 w-5 shrink-0 text-zinc-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
-              </div>
-
-              <ul className="mt-6 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
-                {PROSPEAK_POINTS.map((p) => (
-                  <li key={p} className="flex gap-3 text-sm leading-relaxed text-zinc-300">
-                    <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-sky-400/70" />
-                    {p}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-5">
-                <div className="flex flex-wrap gap-1.5">
-                  {PROSPEAK_TAGS.map((t) => (
-                    <Tag key={t}>{t}</Tag>
-                  ))}
-                </div>
-                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-300">
-                  Read case study
-                  <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
-                </span>
-              </div>
-            </Link>
-          </div>
-
-          {/* Area: Data engineering */}
-          <div>
-            <AreaHeader index="B" name="Data engineering" count="Coming soon" />
-            <div style={delay(100)} className="reveal flex items-center gap-4 rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.015] p-6 sm:p-8">
-              <Lock className="h-4 w-4 shrink-0 text-zinc-600" />
-              <p className="text-sm leading-relaxed text-zinc-500">
-                Pipelines, data modelling and analytics projects. In preparation.
-              </p>
-            </div>
-          </div>
+      {/* 2. Work, classified by area */}
+      <Section
+        id="work"
+        label="Work"
+        title="Selected work"
+        intro="Classified by area. Each project opens a full case study."
+      >
+        <div className="reveal">
+          <WorkTabs
+            tabs={CATEGORIES}
+            projects={PROJECTS.map((p) => ({ slug: p.slug, category: p.category, name: p.name, ...p.card }))}
+          />
         </div>
       </Section>
 
@@ -155,17 +103,5 @@ export default function Home() {
         </div>
       </Section>
     </PageShell>
-  );
-}
-
-function AreaHeader({ index, name, count }: { index: string; name: string; count: string }) {
-  return (
-    <div className="reveal mb-4 flex items-baseline justify-between gap-4">
-      <h3 className="flex items-baseline gap-3 text-base font-medium text-white">
-        <span className="font-mono text-xs text-sky-300/80">{index}</span>
-        {name}
-      </h3>
-      <span className="text-xs text-zinc-500">{count}</span>
-    </div>
   );
 }
