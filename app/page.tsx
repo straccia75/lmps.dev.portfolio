@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Lock, MessageCircle } from "lucide-react";
-import { LINKEDIN_URL, PageShell, PrimaryButton, SecondaryButton, Section, Tag, WHATSAPP_URL } from "./components/site";
+import { delay, LINKEDIN_URL, PageShell, PrimaryButton, SecondaryButton, Section, Tag, WHATSAPP_URL } from "./components/site";
 
 const PROSPEAK_POINTS = [
   "Sales CRM with lead attribution and automatic commissions",
@@ -15,21 +15,21 @@ export default function Home() {
   return (
     <PageShell>
       {/* 1. Hero */}
-      <section className="pb-16 pt-16 sm:pb-20 sm:pt-24">
-        <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.28em] text-sky-300/90">
-          Luigi Palmar · Full-stack engineer
+      <section className="pb-16 pt-16 sm:pb-24 sm:pt-28">
+        <p style={delay(150)} className="enter mb-4 text-[11px] font-medium uppercase tracking-[0.28em] text-sky-300/90">
+          Luigi Straccia · Full-stack engineer
         </p>
-        <h1 className="max-w-3xl text-[2.25rem] font-semibold leading-[1.05] tracking-tight text-white sm:text-6xl">
+        <h1 style={delay(250)} className="enter max-w-3xl text-[2.25rem] font-semibold leading-[1.05] tracking-tight text-white sm:text-6xl">
           I turn business logic
-          <span className="block bg-gradient-to-r from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">
+          <span className="text-shimmer block pb-1">
             into production software.
           </span>
         </h1>
-        <p className="mt-6 max-w-2xl text-[15px] leading-relaxed sm:text-base">
+        <p style={delay(400)} className="enter mt-6 max-w-2xl text-[15px] leading-relaxed sm:text-base">
           CRMs, sales funnels, payment flows and real-time AI features, designed around how the business works and
           built end to end.
         </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div style={delay(550)} className="enter mt-10 flex flex-col gap-3 sm:flex-row">
           <PrimaryButton href="/#work">
             View work
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
@@ -47,7 +47,8 @@ export default function Home() {
 
             <Link
               href="/work/prospeak"
-              className="group block rounded-[1.5rem] border border-white/10 bg-[#0c0c11]/80 p-6 backdrop-blur-xl transition hover:border-sky-400/30 sm:p-8"
+              style={delay(100)}
+              className="reveal spotlight group block rounded-[1.5rem] border border-white/10 bg-[#0c0c11]/80 p-6 backdrop-blur-xl transition-[border-color,box-shadow,translate] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-sky-400/30 hover:shadow-[0_30px_80px_-30px_rgba(56,189,248,0.35)] sm:p-8"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -75,7 +76,10 @@ export default function Home() {
                     <Tag key={t}>{t}</Tag>
                   ))}
                 </div>
-                <span className="text-sm font-medium text-sky-300">Read case study →</span>
+                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-300">
+                  Read case study
+                  <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
+                </span>
               </div>
             </Link>
           </div>
@@ -83,7 +87,7 @@ export default function Home() {
           {/* Area: Data engineering */}
           <div>
             <AreaHeader index="B" name="Data engineering" count="Coming soon" />
-            <div className="flex items-center gap-4 rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.015] p-6 sm:p-8">
+            <div style={delay(100)} className="reveal flex items-center gap-4 rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.015] p-6 sm:p-8">
               <Lock className="h-4 w-4 shrink-0 text-zinc-600" />
               <p className="text-sm leading-relaxed text-zinc-500">
                 Pipelines, data modelling and analytics projects. In preparation.
@@ -96,7 +100,7 @@ export default function Home() {
       {/* 3. About */}
       <Section id="about" label="About" title="I learned the business before I wrote the code.">
         <div className="grid gap-10 md:grid-cols-[1.3fr_0.7fr]">
-          <div className="space-y-4 text-[15px] leading-relaxed">
+          <div className="reveal space-y-4 text-[15px] leading-relaxed">
             <p>
               Before engineering I spent five years in B2B sales, customer operations and real-time workforce
               management, working every day in CRMs like Salesforce and Zoho.
@@ -107,7 +111,7 @@ export default function Home() {
               implement them so they hold in production.
             </p>
           </div>
-          <dl className="space-y-5 text-sm">
+          <dl style={delay(150)} className="reveal space-y-5 text-sm">
             <div>
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Focus</dt>
               <dd className="mt-1.5 text-zinc-300">CRMs, sales funnels, billing, internal tools, real-time AI</dd>
@@ -131,7 +135,7 @@ export default function Home() {
         title="Have a process that should be a system?"
         intro="Tell me how your business works today and what you need it to do."
       >
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="reveal flex flex-col gap-3 sm:flex-row">
           <PrimaryButton href={WHATSAPP_URL} external>
             <MessageCircle className="h-4 w-4" />
             Message on WhatsApp
@@ -148,7 +152,7 @@ export default function Home() {
 
 function AreaHeader({ index, name, count }: { index: string; name: string; count: string }) {
   return (
-    <div className="mb-4 flex items-baseline justify-between gap-4">
+    <div className="reveal mb-4 flex items-baseline justify-between gap-4">
       <h3 className="flex items-baseline gap-3 text-base font-medium text-white">
         <span className="font-mono text-xs text-sky-300/80">{index}</span>
         {name}

@@ -5,7 +5,7 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 export const metadata: Metadata = {
-  title: 'Luigi Palmar | Software & Data Engineering',
+  title: 'Luigi Straccia | Software & Data Engineering',
   description:
     'Full-stack engineer building CRMs, sales funnels, Stripe billing and real-time AI features. Case study: ProSpeak.',
   icons: {
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" data-scroll-behavior="smooth">
       <body className={`${inter.className} bg-[#050505] antialiased text-zinc-400`}>
         {children}
       </body>

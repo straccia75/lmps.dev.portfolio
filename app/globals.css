@@ -1,26 +1,190 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #07070a;
+  --foreground: #ededed;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  interpolate-size: allow-keywords;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 24px;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---------- Entrance (hero, page headers) ---------- */
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.enter {
+  animation: enter 1s var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* ---------- Scroll reveal (toggled by Effects) ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  filter: blur(6px);
+  /* Reveal properties use the stagger delay; hover properties stay instant. */
+  transition:
+    opacity 1s var(--ease-out-expo) var(--delay, 0ms),
+    transform 1s var(--ease-out-expo) var(--delay, 0ms),
+    filter 1s var(--ease-out-expo) var(--delay, 0ms),
+    translate 0.7s var(--ease-out-expo),
+    border-color 0.5s var(--ease-out-expo),
+    box-shadow 0.7s var(--ease-out-expo);
+}
+
+.reveal[data-visible="true"] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* ---------- Animated gradient headline ---------- */
+@keyframes shimmer {
+  to {
+    background-position: -200% center;
+  }
+}
+
+.text-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    #ffffff 0%,
+    #a1a1aa 30%,
+    #ffffff 45%,
+    #7dd3fc 55%,
+    #a1a1aa 70%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 8s linear infinite;
+}
+
+/* ---------- Backdrop light drifting ---------- */
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, 40px, 0) scale(1.1);
+  }
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-12%, -8%, 0) scale(1.15);
+  }
+}
+
+.drift-a {
+  animation: drift-a 18s ease-in-out infinite;
+}
+
+.drift-b {
+  animation: drift-b 22s ease-in-out infinite;
+}
+
+/* ---------- Pointer spotlight on cards ---------- */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    520px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(56, 189, 248, 0.11),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo);
+  pointer-events: none;
+}
+
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* ---------- Smooth open/close for <details> ---------- */
+details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.55s var(--ease-out-expo),
+    content-visibility 0.55s var(--ease-out-expo) allow-discrete;
+}
+
+details[open]::details-content {
+  block-size: auto;
+}
+
+details > :not(summary) {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.45s var(--ease-out-expo),
+    transform 0.45s var(--ease-out-expo);
+}
+
+details[open] > :not(summary) {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.08s;
+}
+
+/* ---------- Respect reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .enter,
+  .text-shimmer,
+  .drift-a,
+  .drift-b {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  details::details-content,
+  details > :not(summary) {
+    transition: none;
+  }
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, MessageCircle } from "lucide-react";
-import { PageShell, PrimaryButton, Section, Tag, WHATSAPP_URL } from "../../components/site";
+import { delay, PageShell, PrimaryButton, Section, Tag, WHATSAPP_URL } from "../../components/site";
 import {
   ARCHITECTURE,
   DECISIONS,
@@ -17,9 +17,9 @@ import {
 } from "./content";
 
 export const metadata: Metadata = {
-  title: "ProSpeak case study | Luigi Palmar",
+  title: "ProSpeak case study | Luigi Straccia",
   description:
-    "English training SaaS with real-time voice AI, a sales CRM, Stripe billing and an automated acquisition funnel. Designed and built by Luigi Palmar.",
+    "English training SaaS with real-time voice AI, a sales CRM, Stripe billing and an automated acquisition funnel. Designed and built by Luigi Straccia.",
 };
 
 const SECURITY_ITEM: System = {
@@ -42,21 +42,21 @@ export default function ProSpeakCaseStudy() {
     <PageShell>
       {/* Overview */}
       <section className="pb-16 pt-12 sm:pt-16">
-        <Link href="/#work" className="mb-10 inline-flex items-center gap-2 text-xs text-zinc-500 transition hover:text-white">
+        <Link href="/#work" style={delay(100)} className="enter mb-10 inline-flex items-center gap-2 text-xs text-zinc-500 transition hover:text-white">
           <ArrowLeft className="h-3.5 w-3.5" />
           All work
         </Link>
 
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.26em] text-sky-300/90">
+        <p style={delay(150)} className="enter mb-3 text-[10px] font-semibold uppercase tracking-[0.26em] text-sky-300/90">
           Case study · Software development
         </p>
-        <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">ProSpeak</h1>
-        <p className="mt-3 max-w-2xl text-lg text-zinc-300">
+        <h1 style={delay(250)} className="enter text-shimmer pb-1 text-4xl font-semibold tracking-tight sm:text-6xl">ProSpeak</h1>
+        <p style={delay(350)} className="enter mt-3 max-w-2xl text-lg text-zinc-300">
           English training SaaS with real-time voice AI, a sales CRM and automated billing.
         </p>
-        <p className="mt-6 max-w-3xl text-[15px] leading-relaxed">{SUMMARY}</p>
+        <p style={delay(450)} className="enter mt-6 max-w-3xl text-[15px] leading-relaxed">{SUMMARY}</p>
 
-        <dl className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:grid-cols-3">
+        <dl style={delay(550)} className="enter mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:grid-cols-3">
           {META.map((m) => (
             <div key={m.label} className="bg-[#0c0c11] p-5">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">{m.label}</dt>
@@ -66,8 +66,8 @@ export default function ProSpeakCaseStudy() {
         </dl>
 
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {FACTS.map((f) => (
-            <div key={f.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          {FACTS.map((f, i) => (
+            <div key={f.label} style={delay(650 + i * 80)} className="enter spotlight rounded-2xl border border-white/10 bg-white/[0.03] p-4">
               <div className="font-mono text-2xl font-semibold tracking-tight text-white">{f.value}</div>
               <div className="mt-1 text-[11px] leading-snug text-zinc-500">{f.label}</div>
             </div>
@@ -83,7 +83,11 @@ export default function ProSpeakCaseStudy() {
       >
         <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {JOURNEY.map((j, i) => (
-            <li key={j.step} className="relative rounded-2xl border border-white/10 bg-[#0c0c11]/80 p-5">
+            <li
+              key={j.step}
+              style={delay((i % 4) * 90)}
+              className="reveal spotlight group relative rounded-2xl border border-white/10 bg-[#0c0c11]/80 p-5 transition-[border-color,translate] duration-500 hover:-translate-y-1 hover:border-sky-400/30"
+            >
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs text-sky-300/80">{String(i + 1).padStart(2, "0")}</span>
                 <span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] uppercase tracking-wider text-zinc-500">
@@ -100,12 +104,12 @@ export default function ProSpeakCaseStudy() {
       {/* 2. Architecture */}
       <Section label="02 · Architecture" title="One backend owns everything of value">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="space-y-4 text-[15px] leading-relaxed">
+          <div className="reveal space-y-4 text-[15px] leading-relaxed">
             {ARCHITECTURE.map((p) => (
               <p key={p}>{p}</p>
             ))}
           </div>
-          <div className="space-y-4">
+          <div style={delay(150)} className="reveal space-y-4">
             {STACK.map((s) => (
               <div key={s.group}>
                 <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">{s.group}</p>
@@ -130,11 +134,11 @@ export default function ProSpeakCaseStudy() {
           {groups.map((g) => {
             return (
               <div key={g.name}>
-                <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                <div className="reveal mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
                   <h3 className="text-base font-medium text-white">{g.name}</h3>
                   <p className="text-xs text-zinc-500">{g.description}</p>
                 </div>
-                <div className="divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c11]/80">
+                <div style={delay(100)} className="reveal divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c11]/80">
                   {g.items.map((s) => (
                     <SystemRow key={s.id} system={s} index={numbered.get(s.id) ?? 0} />
                   ))}
@@ -149,7 +153,7 @@ export default function ProSpeakCaseStudy() {
       <Section label="04 · Decisions" title="Engineering trade-offs">
         <div className="divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c11]/80">
           {DECISIONS.map((d) => (
-            <div key={d.choice} className="grid gap-1 p-5 sm:grid-cols-[0.9fr_1.1fr] sm:gap-8">
+            <div key={d.choice} className="reveal grid gap-1 p-5 sm:grid-cols-[0.9fr_1.1fr] sm:gap-8">
               <p className="text-sm font-medium text-white">{d.choice}</p>
               <p className="text-sm leading-relaxed text-zinc-400">{d.why}</p>
             </div>
@@ -163,10 +167,12 @@ export default function ProSpeakCaseStudy() {
         title="Need a system like this?"
         intro="CRMs, sales funnels, payment flows and internal tools, built around how your business actually works."
       >
+        <div className="reveal">
         <PrimaryButton href={WHATSAPP_URL} external>
           <MessageCircle className="h-4 w-4" />
           Message on WhatsApp
         </PrimaryButton>
+        </div>
       </Section>
     </PageShell>
   );
@@ -175,13 +181,13 @@ export default function ProSpeakCaseStudy() {
 function SystemRow({ system, index }: { system: System; index: number }) {
   return (
     <details id={system.id} className="group scroll-mt-8">
-      <summary className="flex cursor-pointer list-none items-start gap-4 p-5 transition hover:bg-white/[0.02] [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-start gap-4 p-5 transition-colors duration-300 hover:bg-white/[0.03] [&::-webkit-details-marker]:hidden">
         <span className="mt-0.5 font-mono text-xs text-sky-300/80">{String(index).padStart(2, "0")}</span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-white">{system.title}</p>
           <p className="mt-1 text-[13px] leading-relaxed text-zinc-500">{system.intro}</p>
         </div>
-        <span className="mt-0.5 text-lg leading-none text-zinc-500 transition group-open:rotate-45">+</span>
+        <span className="mt-0.5 text-lg leading-none text-zinc-500 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-open:rotate-45 group-open:text-sky-300">+</span>
       </summary>
       <ul className="space-y-2.5 px-5 pb-6 pl-[3.25rem]">
         {system.points.map((p) => (
