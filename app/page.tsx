@@ -1,10 +1,13 @@
-import { ArrowRight, ArrowUpRight, MessageCircle } from "lucide-react";
-import { delay, LINKEDIN_URL, PageShell, PrimaryButton, SecondaryButton, Section, WHATSAPP_URL } from "./components/site";
+import { ArrowRight } from "lucide-react";
+import { ContactActions, delay, PageShell, PrimaryButton, SecondaryButton, Section } from "./components/site";
+import { getSiteMode } from "./lib/site-mode";
 import { WorkTabs } from "./components/work-tabs";
 import { CATEGORIES, PROJECTS } from "./work/registry";
 import { HeroSystem } from "./components/hero-system";
 
-export default function Home() {
+export default async function Home() {
+  const mode = await getSiteMode();
+
   return (
     <PageShell>
       {/* 1. Hero */}
@@ -88,17 +91,14 @@ export default function Home() {
         id="contact"
         label="Contact"
         title="Have a process that should be a system?"
-        intro="Tell me how your business runs today and where it is losing time or sales."
+        intro={
+          mode === "upwork"
+            ? "Tell me how your business runs today and where it is losing time or sales. Invite me to your job on Upwork and we can start there."
+            : "Tell me how your business runs today and where it is losing time or sales."
+        }
       >
-        <div className="reveal flex flex-col gap-3 sm:flex-row">
-          <PrimaryButton href={WHATSAPP_URL} external>
-            <MessageCircle className="h-4 w-4" />
-            Message on WhatsApp
-          </PrimaryButton>
-          <SecondaryButton href={LINKEDIN_URL} external>
-            LinkedIn
-            <ArrowUpRight className="h-4 w-4" />
-          </SecondaryButton>
+        <div className="reveal">
+          <ContactActions />
         </div>
       </Section>
     </PageShell>

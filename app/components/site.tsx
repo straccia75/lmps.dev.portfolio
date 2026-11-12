@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { ArrowUpRight, MessageCircle } from "lucide-react";
 import { Effects } from "./effects";
+import { getSiteMode, UPWORK_PROFILE_URL } from "../lib/site-mode";
 import { Header } from "./header";
 
 /* Stagger helper for .enter / .reveal: delay(120) */
@@ -7,10 +9,10 @@ export function delay(ms: number) {
   return { "--delay": `${ms}ms` } as React.CSSProperties;
 }
 
-export const WHATSAPP_URL =
+const WHATSAPP_URL =
   "https://wa.me/393332988640?text=Hi%20Luigi,%20I%20visited%20lmps.dev%20and%20I%20would%20like%20to%20talk%20about%20a%20project.";
 
-export const LINKEDIN_URL = "https://www.linkedin.com/in/luigi-straccia-80858a241";
+const LINKEDIN_URL = "https://www.linkedin.com/in/luigi-straccia-80858a241";
 
 /* Page frame: background, fixed header, footer. Every page uses this. */
 export function PageShell({ children }: { children: React.ReactNode }) {
@@ -145,5 +147,37 @@ export function SecondaryButton({ href, children, external }: { href: string; ch
     <Link href={href} className={cls}>
       {children}
     </Link>
+  );
+}
+
+/*
+  Contact buttons. On upwork.lmps.dev only the Upwork profile is rendered;
+  WhatsApp and LinkedIn are not sent to the browser at all.
+*/
+export async function ContactActions({ withLinkedIn = true }: { withLinkedIn?: boolean }) {
+  const mode = await getSiteMode();
+
+  if (mode === "upwork") {
+    return (
+      <PrimaryButton href={UPWORK_PROFILE_URL} external>
+        Hire me on Upwork
+        <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+      </PrimaryButton>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3 sm:flex-row">
+      <PrimaryButton href={WHATSAPP_URL} external>
+        <MessageCircle className="h-4 w-4" />
+        Message on WhatsApp
+      </PrimaryButton>
+      {withLinkedIn && (
+        <SecondaryButton href={LINKEDIN_URL} external>
+          LinkedIn
+          <ArrowUpRight className="h-4 w-4" />
+        </SecondaryButton>
+      )}
+    </div>
   );
 }

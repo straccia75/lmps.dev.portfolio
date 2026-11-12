@@ -1,6 +1,7 @@
 import '@/app/globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+import { getSiteMode } from './lib/site-mode';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
@@ -11,7 +12,16 @@ const DESCRIPTION =
 
 // Icons and social images come from app/icon.png, app/apple-icon.png,
 // app/opengraph-image.png and app/twitter-image.png (Next.js file conventions).
-export const metadata: Metadata = {
+const OPEN_GRAPH = {
+  type: 'website' as const,
+  url: SITE_URL,
+  siteName: 'LMPS.dev',
+  title: TITLE,
+  description: DESCRIPTION,
+  locale: 'en_US',
+};
+
+const BASE_METADATA: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
@@ -20,20 +30,26 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   authors: [{ name: 'Luigi Straccia', url: SITE_URL }],
   creator: 'Luigi Straccia',
-  openGraph: {
-    type: 'website',
-    url: SITE_URL,
-    siteName: 'LMPS.dev',
-    title: TITLE,
-    description: DESCRIPTION,
-    locale: 'en_US',
-  },
+  openGraph: OPEN_GRAPH,
   twitter: {
     card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
   },
 };
+
+// upwork.lmps.dev is a copy of the site for Upwork links: keep it out of search engines.
+export async function generateMetadata(): Promise<Metadata> {
+  const mode = await getSiteMode();
+  if (mode !== 'upwork') return BASE_METADATA;
+  return {
+    ...BASE_METADATA,
+    metadataBase: new URL('https://upwork.lmps.dev'),
+    authors: [{ name: 'Luigi Straccia' }],
+    openGraph: { ...OPEN_GRAPH, url: 'https://upwork.lmps.dev' },
+    robots: { index: false, follow: false },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: '#07070a',

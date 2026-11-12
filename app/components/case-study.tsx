@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowLeft, MessageCircle } from "lucide-react";
-import { delay, PrimaryButton, Section, Tag, WHATSAPP_URL } from "./site";
+import { ArrowLeft } from "lucide-react";
+import { ContactActions, delay, Section, Tag } from "./site";
 import { categoryLabel } from "../work/registry";
 import type { CaseStudy, System } from "../work/types";
 
@@ -147,10 +147,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
       {/* CTA */}
       <Section label="Work with me" title={study.cta.title} intro={study.cta.text}>
         <div className="reveal">
-          <PrimaryButton href={WHATSAPP_URL} external>
-            <MessageCircle className="h-4 w-4" />
-            Message on WhatsApp
-          </PrimaryButton>
+          <ContactActions withLinkedIn={false} />
         </div>
       </Section>
     </>
