@@ -31,7 +31,7 @@ export const STACK = [
   },
   { group: "AI & voice", items: ["Gemini Live API", "Deepgram"] },
   { group: "Payments & email", items: ["Stripe", "Resend"] },
-  { group: "Infrastructure", items: ["DigitalOcean"] },
+  { group: "Infrastructure", items: ["DigitalOcean", "Coolify", "Vercel", "Monitoring & logs"] },
 ];
 
 export const FACTS = [
@@ -45,6 +45,7 @@ export const ARCHITECTURE = [
   "The Next.js frontend talks to a FastAPI backend over REST and, during AI practice, over a bidirectional audio WebSocket. The backend is fully asynchronous (FastAPI + SQLAlchemy 2.0 async), so real-time voice sessions, AI calls and payment webhooks never block the API.",
   "The backend is the only authority over anything with economic or academic value: AI usage, grades, certificates, prices and account state.",
   "Persistence runs on SQLite behind SQLAlchemy, with chained Alembic migrations applied automatically on every deploy. Moving to PostgreSQL is a configuration change plus a data migration; the driver is already included.",
+  "Deployment is split by layer: the Next.js frontend runs on Vercel, and the FastAPI backend runs on a DigitalOcean server managed with Coolify. Production has monitoring and logging in place.",
 ];
 
 export const JOURNEY = [
@@ -257,7 +258,7 @@ export const prospeak: CaseStudy = {
       "Stripe billing that activates accounts and converts leads in one flow",
       "Real-time voice AI with server-side usage metering",
     ],
-    tags: ["Next.js", "TypeScript", "FastAPI", "SQLAlchemy", "WebSockets", "Stripe", "Gemini Live"],
+    tags: ["Python", "FastAPI", "Next.js", "TypeScript", "WebSockets", "Stripe", "Gemini Live", "DigitalOcean", "Coolify", "Vercel"],
   },
 
   meta: META,
