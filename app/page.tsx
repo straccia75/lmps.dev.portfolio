@@ -33,7 +33,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div style={delay(500)} className="enter mx-auto w-full max-w-[560px]">
+        <div style={delay(500)} className="enter mx-auto hidden w-full max-w-[560px] sm:block">
           <HeroSystem />
         </div>
       </section>
@@ -42,8 +42,7 @@ export default function Home() {
       <Section
         id="work"
         label="Work"
-        title="Selected work"
-        intro="Classified by area. Each project opens a full case study."
+        title="Projects"
       >
         <div className="reveal">
           <WorkTabs
@@ -58,13 +57,13 @@ export default function Home() {
         <div className="grid gap-10 md:grid-cols-[1.3fr_0.7fr]">
           <div className="reveal space-y-4 text-[15px] leading-relaxed">
             <p>
-              Before engineering I spent five years in B2B sales, customer operations and real-time workforce
-              management, working every day in CRMs like Salesforce and Zoho.
+              Before I moved into engineering, I spent five years in B2B sales, customer operations and real-time
+              workforce management, working in Salesforce and Zoho every day.
             </p>
             <p>
               That is where my software starts: who owns a lead, when a commission is earned, what happens when a
-              payment is abandoned, what a manager needs to see at the end of the day. I define those rules, then
-              implement them so they hold in production.
+              payment is abandoned, what a manager needs to see at the end of the day. I define those rules first,
+              then build software that enforces them.
             </p>
           </div>
           <dl style={delay(150)} className="reveal space-y-5 text-sm">
@@ -89,7 +88,7 @@ export default function Home() {
         id="contact"
         label="Contact"
         title="Have a process that should be a system?"
-        intro="Tell me how your business works today and what you need it to do."
+        intro="Tell me how your business runs today and where it is losing time or sales."
       >
         <div className="reveal flex flex-col gap-3 sm:flex-row">
           <PrimaryButton href={WHATSAPP_URL} external>

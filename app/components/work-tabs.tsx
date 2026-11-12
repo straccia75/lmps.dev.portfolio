@@ -15,7 +15,7 @@ export type ProjectCard = {
   tags: string[];
 };
 
-type Tab = { id: Category; label: string; empty: string };
+type Tab = { id: Category; label: string; short: string; empty: string };
 
 /* Work section: one tab per area, projects of the active area in a grid. */
 export function WorkTabs({ tabs, projects }: { tabs: Tab[]; projects: ProjectCard[] }) {
@@ -70,7 +70,8 @@ export function WorkTabs({ tabs, projects }: { tabs: Tab[]; projects: ProjectCar
                 selected ? "text-zinc-950" : "text-zinc-400 hover:text-white"
               }`}
             >
-              {t.label}
+              <span className="sm:hidden">{t.short}</span>
+              <span className="hidden sm:inline">{t.label}</span>
               <span
                 className={`rounded-full px-1.5 py-px font-mono text-[10px] transition-colors duration-500 ${
                   selected ? "bg-zinc-950/10 text-zinc-700" : "bg-white/[0.06] text-zinc-500"

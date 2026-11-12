@@ -101,7 +101,7 @@ export function Section({
   children?: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-8 border-t border-white/5 py-16 sm:py-24">
+    <section id={id} className="border-t border-white/5 py-16 sm:py-24">
       <div className="reveal">
         <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.26em] text-sky-300/90">{label}</p>
         {title && <h2 className="max-w-2xl text-2xl font-semibold tracking-tight text-white sm:text-4xl">{title}</h2>}

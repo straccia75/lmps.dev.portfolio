@@ -110,7 +110,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
       <Section
         label="03 · Systems"
         title="What I designed and built"
-        intro="Grouped by what they do. Open any system for the technical detail."
+        intro="Grouped by the part of the business they serve."
       >
         <div className="space-y-12">
           {study.groups.map((g) => (

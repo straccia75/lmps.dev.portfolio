@@ -1,15 +1,17 @@
 import type { CaseStudy, Category } from "./types";
 import { prospeak } from "./prospeak/content";
 
-export const CATEGORIES: { id: Category; label: string; empty: string }[] = [
+export const CATEGORIES: { id: Category; label: string; short: string; empty: string }[] = [
   {
     id: "software",
     label: "Software Development",
+    short: "Software",
     empty: "Projects coming soon.",
   },
   {
     id: "data",
     label: "Data Engineering",
+    short: "Data",
     empty: "Pipelines, data modelling and analytics projects. In preparation.",
   },
 ];
