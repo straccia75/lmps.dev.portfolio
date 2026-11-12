@@ -5,10 +5,9 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 export const metadata: Metadata = {
-  // Cambia el título si quieres que diga otra cosa en la pestaña
-  title: 'Portfolio | ProSpeak in Progress',
-  description: 'Portafolio personal y proyectos en desarrollo.',
-  // ESTO ES LO QUE CAMBIA EL ICONO DE LA PESTAÑA
+  title: 'Luigi Palmar | Software & Data Engineering',
+  description:
+    'Full-stack engineer building CRMs, sales funnels, Stripe billing and real-time AI features. Case study: ProSpeak.',
   icons: {
     icon: '/logo1.png',
   },
