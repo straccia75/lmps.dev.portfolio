@@ -1,188 +1,196 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, MessageCircle } from "lucide-react";
-import { Backdrop, Footer, Header, Pill, SectionLabel, WHATSAPP_URL } from "../../components/site";
-import { ARCHITECTURE, DECISIONS, FACTS, META, SECURITY, STACK, SUMMARY, SYSTEMS } from "./content";
+import { ArrowLeft, MessageCircle } from "lucide-react";
+import { PageShell, PrimaryButton, Section, Tag, WHATSAPP_URL } from "../../components/site";
+import {
+  ARCHITECTURE,
+  DECISIONS,
+  FACTS,
+  GROUPS,
+  JOURNEY,
+  META,
+  SECURITY,
+  STACK,
+  SUMMARY,
+  SYSTEMS,
+  type System,
+} from "./content";
 
 export const metadata: Metadata = {
-  title: "ProSpeak case study | LMPS.dev",
+  title: "ProSpeak case study | Luigi Palmar",
   description:
-    "AI English training SaaS with real-time voice simulations, a sales CRM, Stripe billing and an automated acquisition funnel. Designed and built by Luigi Palmar.",
+    "English training SaaS with real-time voice AI, a sales CRM, Stripe billing and an automated acquisition funnel. Designed and built by Luigi Palmar.",
+};
+
+const SECURITY_ITEM: System = {
+  id: "security",
+  title: "Security audit and hardening",
+  intro: "A full review of the platform, followed by hardening.",
+  points: SECURITY,
 };
 
 export default function ProSpeakCaseStudy() {
+  const byId = new Map(SYSTEMS.map((s) => [s.id, s]));
+  const groups = GROUPS.map((g) => {
+    const items = g.ids.map((id) => byId.get(id)).filter((s): s is System => Boolean(s));
+    if (g.name === "Money and trust") items.push(SECURITY_ITEM);
+    return { ...g, items };
+  });
+  const numbered = new Map(groups.flatMap((g) => g.items).map((s, i) => [s.id, i + 1]));
+
   return (
-    <div className="relative min-h-dvh w-full overflow-x-hidden bg-[#07070a] text-zinc-400 font-sans antialiased selection:bg-sky-500/30 selection:text-white">
-      <Backdrop />
+    <PageShell>
+      {/* Overview */}
+      <section className="pb-16 pt-12 sm:pt-16">
+        <Link href="/#work" className="mb-10 inline-flex items-center gap-2 text-xs text-zinc-500 transition hover:text-white">
+          <ArrowLeft className="h-3.5 w-3.5" />
+          All work
+        </Link>
 
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-5 sm:px-8">
-        <Header />
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.26em] text-sky-300/90">
+          Case study · Software development
+        </p>
+        <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">ProSpeak</h1>
+        <p className="mt-3 max-w-2xl text-lg text-zinc-300">
+          English training SaaS with real-time voice AI, a sales CRM and automated billing.
+        </p>
+        <p className="mt-6 max-w-3xl text-[15px] leading-relaxed">{SUMMARY}</p>
 
-        <main className="pt-14 sm:pt-20">
-          <Link
-            href="/#work"
-            className="mb-8 inline-flex items-center gap-2 text-xs text-zinc-500 transition hover:text-white"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back to work
-          </Link>
+        <dl className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:grid-cols-3">
+          {META.map((m) => (
+            <div key={m.label} className="bg-[#0c0c11] p-5">
+              <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">{m.label}</dt>
+              <dd className="mt-2 text-sm leading-relaxed text-zinc-200">{m.value}</dd>
+            </div>
+          ))}
+        </dl>
 
-          {/* Intro */}
-          <section>
-            <SectionLabel>Case study · 01</SectionLabel>
-            <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">ProSpeak</h1>
-            <p className="mt-3 text-lg text-zinc-300 sm:text-xl">
-              Professional English SaaS with real-time voice AI, a sales CRM and automated billing.
-            </p>
-            <p className="mt-6 max-w-3xl text-[15px] leading-relaxed text-zinc-400">{SUMMARY}</p>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {FACTS.map((f) => (
+            <div key={f.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="font-mono text-2xl font-semibold tracking-tight text-white">{f.value}</div>
+              <div className="mt-1 text-[11px] leading-snug text-zinc-500">{f.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-            <dl className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:grid-cols-3">
-              {META.map((m) => (
-                <div key={m.label} className="bg-[#0c0c11]/90 p-5">
-                  <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">{m.label}</dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-zinc-200">{m.value}</dd>
+      {/* 1. Customer journey */}
+      <Section
+        label="01 · The business"
+        title="How a customer moves through the system"
+        intro="Two entry channels, a sales rep's trial link or a self-serve landing page, lead to the same pipeline. Every step below is a rule I defined and then implemented."
+      >
+        <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {JOURNEY.map((j, i) => (
+            <li key={j.step} className="relative rounded-2xl border border-white/10 bg-[#0c0c11]/80 p-5">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs text-sky-300/80">{String(i + 1).padStart(2, "0")}</span>
+                <span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] uppercase tracking-wider text-zinc-500">
+                  {j.actor}
+                </span>
+              </div>
+              <p className="mt-3 text-sm font-medium text-white">{j.step}</p>
+              <p className="mt-1 text-[13px] leading-relaxed text-zinc-500">{j.detail}</p>
+            </li>
+          ))}
+        </ol>
+      </Section>
+
+      {/* 2. Architecture */}
+      <Section label="02 · Architecture" title="One backend owns everything of value">
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-4 text-[15px] leading-relaxed">
+            {ARCHITECTURE.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+          </div>
+          <div className="space-y-4">
+            {STACK.map((s) => (
+              <div key={s.group}>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">{s.group}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {s.items.map((i) => (
+                    <Tag key={i}>{i}</Tag>
+                  ))}
                 </div>
-              ))}
-            </dl>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
 
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {FACTS.map((f) => (
-                <div
-                  key={f.label}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
-                >
-                  <div className="font-mono text-2xl font-semibold tracking-tight text-white">{f.value}</div>
-                  <div className="mt-1 text-[11px] leading-snug text-zinc-500">{f.label}</div>
+      {/* 3. Systems, grouped */}
+      <Section
+        label="03 · Systems"
+        title="What I designed and built"
+        intro="Grouped by what they do for the business. Open any system for the technical detail."
+      >
+        <div className="space-y-12">
+          {groups.map((g) => {
+            return (
+              <div key={g.name}>
+                <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                  <h3 className="text-base font-medium text-white">{g.name}</h3>
+                  <p className="text-xs text-zinc-500">{g.description}</p>
                 </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Stack */}
-          <section className="mt-20">
-            <SectionLabel>Stack</SectionLabel>
-            <div className="space-y-3">
-              {STACK.map((s) => (
-                <div key={s.group} className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-6">
-                  <span className="w-36 shrink-0 text-xs text-zinc-500">{s.group}</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {s.items.map((i) => (
-                      <Pill key={i}>{i}</Pill>
-                    ))}
-                  </div>
+                <div className="divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c11]/80">
+                  {g.items.map((s) => (
+                    <SystemRow key={s.id} system={s} index={numbered.get(s.id) ?? 0} />
+                  ))}
                 </div>
-              ))}
+              </div>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* 4. Decisions */}
+      <Section label="04 · Decisions" title="Engineering trade-offs">
+        <div className="divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c11]/80">
+          {DECISIONS.map((d) => (
+            <div key={d.choice} className="grid gap-1 p-5 sm:grid-cols-[0.9fr_1.1fr] sm:gap-8">
+              <p className="text-sm font-medium text-white">{d.choice}</p>
+              <p className="text-sm leading-relaxed text-zinc-400">{d.why}</p>
             </div>
-          </section>
+          ))}
+        </div>
+      </Section>
 
-          {/* Architecture */}
-          <section className="mt-20">
-            <SectionLabel>Architecture</SectionLabel>
-            <h2 className="text-2xl font-semibold tracking-tight text-white">One backend owns everything of value</h2>
-            <div className="mt-5 max-w-3xl space-y-4 text-[15px] leading-relaxed">
-              {ARCHITECTURE.map((p) => (
-                <p key={p}>{p}</p>
-              ))}
-            </div>
-          </section>
+      {/* CTA */}
+      <Section
+        label="Work with me"
+        title="Need a system like this?"
+        intro="CRMs, sales funnels, payment flows and internal tools, built around how your business actually works."
+      >
+        <PrimaryButton href={WHATSAPP_URL} external>
+          <MessageCircle className="h-4 w-4" />
+          Message on WhatsApp
+        </PrimaryButton>
+      </Section>
+    </PageShell>
+  );
+}
 
-          {/* Systems */}
-          <section className="mt-20">
-            <SectionLabel>Systems I designed and built</SectionLabel>
-            <h2 className="text-2xl font-semibold tracking-tight text-white">From business rule to production code</h2>
-            <p className="mt-3 max-w-3xl text-[15px] leading-relaxed">
-              Each system below started as a business decision (who pays, who gets credit for a sale, what a trial
-              is allowed to cost) and was implemented end to end.
-            </p>
-
-            <nav className="mt-6 flex flex-wrap gap-1.5">
-              {SYSTEMS.map((s, i) => (
-                <a
-                  key={s.id}
-                  href={`#${s.id}`}
-                  className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-zinc-400 transition hover:border-sky-400/40 hover:text-white"
-                >
-                  {String(i + 1).padStart(2, "0")} {s.title}
-                </a>
-              ))}
-            </nav>
-
-            <div className="mt-10 space-y-4">
-              {SYSTEMS.map((s, i) => (
-                <article
-                  key={s.id}
-                  id={s.id}
-                  className="scroll-mt-8 rounded-[1.4rem] border border-white/10 bg-[#0c0c11]/80 p-6 backdrop-blur-xl sm:p-8"
-                >
-                  <div className="flex items-baseline gap-4">
-                    <span className="font-mono text-xs text-sky-300/80">{String(i + 1).padStart(2, "0")}</span>
-                    <div>
-                      <h3 className="text-lg font-semibold tracking-tight text-white">{s.title}</h3>
-                      <p className="mt-1 text-sm text-zinc-400">{s.intro}</p>
-                    </div>
-                  </div>
-                  <ul className="mt-5 space-y-2.5 sm:pl-9">
-                    {s.points.map((p) => (
-                      <li key={p} className="flex gap-3 text-[14px] leading-relaxed text-zinc-300">
-                        <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-sky-400/70" />
-                        <span>{p}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          {/* Security */}
-          <section className="mt-20">
-            <SectionLabel>Security</SectionLabel>
-            <h2 className="text-2xl font-semibold tracking-tight text-white">Audited and hardened</h2>
-            <ul className="mt-5 max-w-3xl space-y-2.5">
-              {SECURITY.map((p) => (
-                <li key={p} className="flex gap-3 text-[14px] leading-relaxed text-zinc-300">
-                  <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-sky-400/70" />
-                  <span>{p}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          {/* Decisions */}
-          <section className="mt-20">
-            <SectionLabel>Engineering decisions</SectionLabel>
-            <h2 className="text-2xl font-semibold tracking-tight text-white">Trade-offs, and why</h2>
-            <div className="mt-6 divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c11]/80">
-              {DECISIONS.map((d) => (
-                <div key={d.choice} className="grid gap-1 p-5 sm:grid-cols-[0.9fr_1.1fr] sm:gap-6">
-                  <p className="text-sm font-medium text-white">{d.choice}</p>
-                  <p className="text-sm leading-relaxed text-zinc-400">{d.why}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* CTA */}
-          <section className="mt-20 rounded-[1.7rem] border border-white/10 bg-white/[0.03] p-8 text-center sm:p-10">
-            <h2 className="text-2xl font-semibold tracking-tight text-white">Need a system like this?</h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed">
-              CRMs, sales funnels, payment flows and internal tools, built around how your business actually works.
-            </p>
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-zinc-950 transition hover:scale-[1.03] active:scale-[0.98]"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Request a quote
-              <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </a>
-          </section>
-        </main>
-
-        <Footer />
-      </div>
-    </div>
+function SystemRow({ system, index }: { system: System; index: number }) {
+  return (
+    <details id={system.id} className="group scroll-mt-8">
+      <summary className="flex cursor-pointer list-none items-start gap-4 p-5 transition hover:bg-white/[0.02] [&::-webkit-details-marker]:hidden">
+        <span className="mt-0.5 font-mono text-xs text-sky-300/80">{String(index).padStart(2, "0")}</span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-white">{system.title}</p>
+          <p className="mt-1 text-[13px] leading-relaxed text-zinc-500">{system.intro}</p>
+        </div>
+        <span className="mt-0.5 text-lg leading-none text-zinc-500 transition group-open:rotate-45">+</span>
+      </summary>
+      <ul className="space-y-2.5 px-5 pb-6 pl-[3.25rem]">
+        {system.points.map((p) => (
+          <li key={p} className="flex gap-3 text-[14px] leading-relaxed text-zinc-300">
+            <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-sky-400/70" />
+            <span>{p}</span>
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }

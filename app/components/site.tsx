@@ -4,9 +4,23 @@ import Link from "next/link";
 export const WHATSAPP_URL =
   "https://wa.me/393332988640?text=Hi%20Luigi,%20I%20visited%20lmps.dev%20and%20I%20would%20like%20to%20talk%20about%20a%20project.";
 
-export const LINKEDIN_URL = "https://www.linkedin.com/in/luigi-palmar-80858a241";
+export const LINKEDIN_URL = "https://www.linkedin.com/in/luigi-straccia-80858a241";
 
-export function Backdrop() {
+/* Page frame: background, header, footer. Every page uses this. */
+export function PageShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative min-h-dvh w-full overflow-x-hidden bg-[#07070a] text-zinc-400 font-sans antialiased selection:bg-sky-500/30 selection:text-white">
+      <Backdrop />
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-5 sm:px-8">
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </div>
+  );
+}
+
+function Backdrop() {
   return (
     <div className="pointer-events-none fixed inset-0">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.12),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.10),transparent_50%)]" />
@@ -31,10 +45,10 @@ const NAV = [
   { href: "/#contact", label: "Contact" },
 ];
 
-export function Header() {
+function Header() {
   return (
     <header className="flex items-center justify-between gap-4 pt-5 sm:pt-7">
-      <Link href="/" aria-label="LMPS.dev home" className="relative h-14 w-40 sm:h-16 sm:w-52 scale-[2.25] origin-left">
+      <Link href="/" aria-label="LMPS.dev home" className="relative h-14 w-40 sm:h-16 sm:w-52 scale-[2.25]">
         <Image
           src="/logo2.png"
           alt="LMPS.dev"
@@ -44,7 +58,7 @@ export function Header() {
           priority
         />
       </Link>
-      <nav className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1 backdrop-blur-md">
+      <nav className="relative z-10 flex items-center gap-1 rounded-full border border-white/10 bg-[#0c0c11]/80 p-1 backdrop-blur-md">
         {NAV.map((item) => (
           <Link
             key={item.href}
@@ -59,27 +73,71 @@ export function Header() {
   );
 }
 
-export function Footer() {
+function Footer() {
   return (
-    <footer className="mt-16 flex flex-col items-center justify-between gap-2 border-t border-white/5 py-6 text-[11px] tracking-wide text-zinc-600 sm:flex-row">
-      <span>© {new Date().getFullYear()} Luigi Palmar · LMPS.dev</span>
-      <span>Software & data engineering · Italy</span>
+    <footer className="mt-24 flex flex-col items-center justify-between gap-2 border-t border-white/5 py-6 text-[11px] tracking-wide text-zinc-600 sm:flex-row">
+      <span>© {new Date().getFullYear()} Luigi Palmar</span>
+      <span>Software & data engineering</span>
     </footer>
   );
 }
 
-export function SectionLabel({ children }: { children: React.ReactNode }) {
+/* Consistent section block: label, title, optional intro, content. */
+export function Section({
+  id,
+  label,
+  title,
+  intro,
+  children,
+}: {
+  id?: string;
+  label: string;
+  title?: string;
+  intro?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.26em] text-sky-300/90">
-      {children}
-    </p>
+    <section id={id} className="scroll-mt-8 border-t border-white/5 py-16 sm:py-20">
+      <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.26em] text-sky-300/90">{label}</p>
+      {title && <h2 className="max-w-2xl text-2xl font-semibold tracking-tight text-white sm:text-3xl">{title}</h2>}
+      {intro && <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-zinc-400">{intro}</p>}
+      {children && <div className={title || intro ? "mt-10" : ""}>{children}</div>}
+    </section>
   );
 }
 
-export function Pill({ children }: { children: React.ReactNode }) {
+export function Tag({ children }: { children: React.ReactNode }) {
   return (
     <span className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[11px] text-zinc-300">
       {children}
     </span>
+  );
+}
+
+export function PrimaryButton({ href, children, external }: { href: string; children: React.ReactNode; external?: boolean }) {
+  const cls =
+    "group inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-zinc-950 shadow-[0_0_40px_rgba(255,255,255,0.12)] transition hover:scale-[1.03] active:scale-[0.98]";
+  return external ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+      {children}
+    </a>
+  ) : (
+    <Link href={href} className={cls}>
+      {children}
+    </Link>
+  );
+}
+
+export function SecondaryButton({ href, children, external }: { href: string; children: React.ReactNode; external?: boolean }) {
+  const cls =
+    "inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-medium text-zinc-200 transition hover:border-white/30 hover:text-white";
+  return external ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+      {children}
+    </a>
+  ) : (
+    <Link href={href} className={cls}>
+      {children}
+    </Link>
   );
 }

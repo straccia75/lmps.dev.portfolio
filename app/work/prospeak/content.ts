@@ -52,6 +52,35 @@ export const ARCHITECTURE = [
   "Persistence runs on SQLite behind SQLAlchemy, with chained Alembic migrations applied automatically on every deploy. Moving to PostgreSQL is a configuration change plus a data migration; the driver is already included.",
 ];
 
+export const JOURNEY = [
+  { step: "Landing page", detail: "One per profession, or a sales rep's trial link", actor: "Automated" },
+  { step: "Placement test", detail: "Audio questions, level assigned", actor: "Automated" },
+  { step: "Trial lesson", detail: "8 blocks with a voice simulation", actor: "AI" },
+  { step: "AI report", detail: "Level and performance written to the CRM", actor: "AI" },
+  { step: "Sales call", detail: "Rep calls knowing the result", actor: "Sales rep" },
+  { step: "Payment", detail: "Stripe or approved manual method", actor: "Automated" },
+  { step: "Active student", detail: "Account, AI access, commission, email", actor: "Automated" },
+  { step: "Certificate", detail: "Exam graded on the server", actor: "Automated" },
+];
+
+export const GROUPS = [
+  {
+    name: "Product",
+    description: "What the student uses.",
+    ids: ["simulation-engine", "voice-gateway", "content-engine", "webgl"],
+  },
+  {
+    name: "Sales and growth",
+    description: "How students are acquired, and how the team sells.",
+    ids: ["acquisition", "trial-funnel", "crm", "admin"],
+  },
+  {
+    name: "Money and trust",
+    description: "Payments, grades and anything that must not be tampered with.",
+    ids: ["billing", "certification"],
+  },
+];
+
 export const SYSTEMS: System[] = [
   {
     id: "voice-gateway",
