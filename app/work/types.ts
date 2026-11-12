@@ -13,12 +13,28 @@ export type System = {
   points: string[];
 };
 
+/* Image or video shown on the site. Files live in public/work/<slug>/ */
+export type Media = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  caption?: string;
+};
+
 export type CaseStudy = {
   slug: string;
   category: Category;
   name: string;
   tagline: string;
   summary: string;
+
+  /* Optional visuals: thumbnail for the home card, demo video and screenshots for the case study */
+  media?: {
+    thumbnail?: Media;
+    video?: Media & { poster: string };
+    screenshots?: Media[];
+  };
 
   /* Card shown in the Work tabs on the home page */
   card: {

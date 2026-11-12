@@ -50,7 +50,13 @@ export default async function Home() {
         <div className="reveal">
           <WorkTabs
             tabs={CATEGORIES}
-            projects={PROJECTS.map((p) => ({ slug: p.slug, category: p.category, name: p.name, ...p.card }))}
+            projects={PROJECTS.map((p) => ({
+              slug: p.slug,
+              category: p.category,
+              name: p.name,
+              thumbnail: p.media?.thumbnail,
+              ...p.card,
+            }))}
           />
         </div>
       </Section>

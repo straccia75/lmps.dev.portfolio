@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# original, uncompressed media (the site uses the compressed copies in public/)
+/_media-source/
+/Claude outputs/

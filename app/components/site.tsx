@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Mail, MessageCircle } from "lucide-react";
 import { Effects } from "./effects";
 import { getSiteMode, UPWORK_PROFILE_URL } from "../lib/site-mode";
 import { Header } from "./header";
@@ -11,6 +11,8 @@ export function delay(ms: number) {
 
 const WHATSAPP_URL =
   "https://wa.me/393332988640?text=Hi%20Luigi,%20I%20visited%20lmps.dev%20and%20I%20would%20like%20to%20talk%20about%20a%20project.";
+
+const EMAIL = "straccia75@gmail.com";
 
 const LINKEDIN_URL = "https://www.linkedin.com/in/luigi-straccia-80858a241";
 
@@ -79,11 +81,19 @@ function Backdrop() {
   );
 }
 
-function Footer() {
+/* The email is shown only on the main site; upwork.lmps.dev keeps contact on Upwork. */
+async function Footer() {
+  const mode = await getSiteMode();
   return (
     <footer className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-white/5 py-6 text-[11px] tracking-wide text-zinc-600 sm:flex-row">
       <span>© {new Date().getFullYear()} Luigi Straccia</span>
-      <span>Software & data engineering</span>
+      {mode === "main" ? (
+        <a href={`mailto:${EMAIL}`} className="transition-colors hover:text-zinc-300">
+          {EMAIL}
+        </a>
+      ) : (
+        <span>Software & data engineering</span>
+      )}
     </footer>
   );
 }
@@ -140,7 +150,12 @@ export function SecondaryButton({ href, children, external }: { href: string; ch
   const cls =
     "inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-medium text-zinc-200 transition duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.06] hover:text-white";
   return external ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+    <a
+      href={href}
+      target={href.startsWith("mailto:") ? undefined : "_blank"}
+      rel="noopener noreferrer"
+      className={cls}
+    >
       {children}
     </a>
   ) : (
@@ -152,7 +167,7 @@ export function SecondaryButton({ href, children, external }: { href: string; ch
 
 /*
   Contact buttons. On upwork.lmps.dev only the Upwork profile is rendered;
-  WhatsApp and LinkedIn are not sent to the browser at all.
+  WhatsApp, email and LinkedIn are not sent to the browser at all.
 */
 export async function ContactActions({ withLinkedIn = true }: { withLinkedIn?: boolean }) {
   const mode = await getSiteMode();
@@ -172,6 +187,10 @@ export async function ContactActions({ withLinkedIn = true }: { withLinkedIn?: b
         <MessageCircle className="h-4 w-4" />
         Message on WhatsApp
       </PrimaryButton>
+      <SecondaryButton href={`mailto:${EMAIL}`} external>
+        <Mail className="h-4 w-4" />
+        Email
+      </SecondaryButton>
       {withLinkedIn && (
         <SecondaryButton href={LINKEDIN_URL} external>
           LinkedIn

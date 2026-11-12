@@ -249,6 +249,48 @@ export const prospeak: CaseStudy = {
   tagline: "English training SaaS with real-time voice AI, a sales CRM and automated billing.",
   summary: SUMMARY,
 
+  media: {
+    thumbnail: {
+      src: "/work/prospeak/thumbnail.png",
+      alt: "ProSpeak voice simulation: the student talks to Emily, an AI character, about her son's fever",
+      width: 1600,
+      height: 1200,
+    },
+    video: {
+      src: "/work/prospeak/demo.mp4",
+      poster: "/work/prospeak/demo-poster.jpg",
+      alt: "Screen recording of a ProSpeak voice simulation",
+      width: 1280,
+      height: 608,
+      caption:
+        "A trial voice simulation. The student plays the pediatrician and interviews Emily, an AI character, in real time, guided step by step through the consultation.",
+    },
+    screenshots: [
+      {
+        src: "/work/prospeak/crm-leads.png",
+        alt: "ProSpeak CRM: lead list and call outcome form for a sales rep",
+        width: 1909,
+        height: 901,
+        caption:
+          "Sales rep view. Each call outcome is one click and schedules the next follow-up automatically.",
+      },
+      {
+        src: "/work/prospeak/admin-dashboard.png",
+        alt: "ProSpeak admin dashboard with students, revenue, trials and the sales funnel",
+        width: 1916,
+        height: 896,
+        caption: "Admin dashboard: students, revenue, trials, calls and the sales funnel at a glance.",
+      },
+      {
+        src: "/work/prospeak/sales-metrics.png",
+        alt: "ProSpeak sales metrics: weekly trials and calls, and conversion per sales rep",
+        width: 1896,
+        height: 873,
+        caption: "Sales metrics: weekly trials and calls, and conversion per sales rep.",
+      },
+    ],
+  },
+
   card: {
     kicker: "SaaS · Founder & sole engineer",
     blurb: "English training platform for professionals, with the full business operation built around it.",

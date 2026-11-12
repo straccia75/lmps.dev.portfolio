@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, ArrowUpRight, Lock } from "lucide-react";
-import type { Category } from "../work/types";
+import type { Category, Media } from "../work/types";
 
 export type ProjectCard = {
   slug: string;
@@ -13,6 +14,7 @@ export type ProjectCard = {
   blurb: string;
   points: string[];
   tags: string[];
+  thumbnail?: Media;
 };
 
 type Tab = { id: Category; label: string; short: string; empty: string };
@@ -97,7 +99,7 @@ export function WorkTabs({ tabs, projects }: { tabs: Tab[]; projects: ProjectCar
         ) : (
           <div className={`grid gap-4 ${visible.length > 1 ? "lg:grid-cols-2" : ""}`}>
             {visible.map((p, i) => (
-              <ProjectCardView key={p.slug} project={p} index={i} />
+              <ProjectCardView key={p.slug} project={p} index={i} wide={visible.length === 1} />
             ))}
           </div>
         )}
@@ -106,44 +108,63 @@ export function WorkTabs({ tabs, projects }: { tabs: Tab[]; projects: ProjectCar
   );
 }
 
-function ProjectCardView({ project, index }: { project: ProjectCard; index: number }) {
+/* wide: the only card in the panel, so the thumbnail sits beside the text on large screens */
+function ProjectCardView({ project, index, wide }: { project: ProjectCard; index: number; wide: boolean }) {
+  const thumb = project.thumbnail;
   return (
     <Link
       href={`/work/${project.slug}`}
       style={{ "--delay": `${index * 90}ms` } as React.CSSProperties}
-      className="enter spotlight group flex flex-col rounded-[1.5rem] border border-white/10 bg-[#0c0c11]/80 p-6 backdrop-blur-xl transition-[border-color,box-shadow,translate] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-sky-400/30 hover:shadow-[0_30px_80px_-30px_rgba(56,189,248,0.35)] sm:p-8"
+      className={`enter spotlight group grid gap-8 rounded-[1.5rem] border border-white/10 bg-[#0c0c11]/80 p-6 backdrop-blur-xl transition-[border-color,box-shadow,translate] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-sky-400/30 hover:shadow-[0_30px_80px_-30px_rgba(56,189,248,0.35)] sm:p-8 ${
+        thumb && wide ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center" : ""
+      }`}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">{project.kicker}</p>
-          <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">{project.name}</h3>
-          <p className="mt-2 max-w-xl text-[15px] leading-relaxed">{project.blurb}</p>
+      {thumb && (
+        <div className={`overflow-hidden rounded-2xl border border-white/10 bg-black/40 ${wide ? "lg:order-2" : ""}`}>
+          <Image
+            src={thumb.src}
+            alt={thumb.alt}
+            width={thumb.width}
+            height={thumb.height}
+            sizes={wide ? "(min-width: 1024px) 560px, 100vw" : "(min-width: 1024px) 600px, 100vw"}
+            className="h-auto w-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
+          />
         </div>
-        <ArrowUpRight className="h-5 w-5 shrink-0 text-zinc-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
-      </div>
+      )}
 
-      <ul className="mt-6 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
-        {project.points.map((pt) => (
-          <li key={pt} className="flex gap-3 text-sm leading-relaxed text-zinc-300">
-            <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-sky-400/70" />
-            {pt}
-          </li>
-        ))}
-      </ul>
+      <div className="flex flex-col">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">{project.kicker}</p>
+            <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">{project.name}</h3>
+            <p className="mt-2 max-w-xl text-[15px] leading-relaxed">{project.blurb}</p>
+          </div>
+          <ArrowUpRight className="h-5 w-5 shrink-0 text-zinc-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
+        </div>
 
-      <div className="flex-1" />
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-5">
-        <div className="flex flex-wrap gap-1.5">
-          {project.tags.map((t) => (
-            <span key={t} className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[11px] text-zinc-300">
-              {t}
-            </span>
+        <ul className={`mt-6 grid gap-x-8 gap-y-2.5 ${thumb && wide ? "" : "sm:grid-cols-2"}`}>
+          {project.points.map((pt) => (
+            <li key={pt} className="flex gap-3 text-sm leading-relaxed text-zinc-300">
+              <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-sky-400/70" />
+              {pt}
+            </li>
           ))}
+        </ul>
+
+        <div className="flex-1" />
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-5">
+          <div className="flex flex-wrap gap-1.5">
+            {project.tags.map((t) => (
+              <span key={t} className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[11px] text-zinc-300">
+                {t}
+              </span>
+            ))}
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-300">
+            Read case study
+            <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
+          </span>
         </div>
-        <span className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-300">
-          Read case study
-          <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
-        </span>
       </div>
     </Link>
   );

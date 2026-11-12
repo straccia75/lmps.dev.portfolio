@@ -1,8 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { ContactActions, delay, Section, Tag } from "./site";
 import { categoryLabel } from "../work/registry";
-import type { CaseStudy, System } from "../work/types";
+import type { CaseStudy, Media, System } from "../work/types";
 
 /* Reusable case-study layout. Every project page renders this with its own content. */
 export function CaseStudyView({ study }: { study: CaseStudy }) {
@@ -60,6 +61,45 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
           ))}
         </div>
       </section>
+
+      {/* Product in action: demo video and screenshots (only if the project has them) */}
+      {Boolean(study.media?.video || study.media?.screenshots?.length) && study.media && (
+        <Section label="In action" title="See it working">
+          <div className="space-y-6">
+            {study.media.video && (
+              <figure className="reveal">
+                <div className="overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_30px_80px_-30px_rgba(56,189,248,0.25)]">
+                  <video
+                    controls
+                    playsInline
+                    preload="metadata"
+                    poster={study.media.video.poster}
+                    width={study.media.video.width}
+                    height={study.media.video.height}
+                    aria-label={study.media.video.alt}
+                    className="block h-auto w-full"
+                  >
+                    <source src={study.media.video.src} type="video/mp4" />
+                  </video>
+                </div>
+                {study.media.video.caption && (
+                  <figcaption className="mt-3 max-w-3xl text-[13px] leading-relaxed text-zinc-500">
+                    {study.media.video.caption}
+                  </figcaption>
+                )}
+              </figure>
+            )}
+
+            {study.media.screenshots && study.media.screenshots.length > 0 && (
+              <div className="grid gap-6 md:grid-cols-2">
+                {study.media.screenshots.map((shot, i) => (
+                  <Screenshot key={shot.src} shot={shot} featured={i === 0} index={i} />
+                ))}
+              </div>
+            )}
+          </div>
+        </Section>
+      )}
 
       {/* 01 · Flow */}
       <Section label="01 · The flow" title={study.flow.title} intro={study.flow.intro}>
@@ -176,5 +216,31 @@ function SystemRow({ system, index }: { system: System; index: number }) {
         ))}
       </ul>
     </details>
+  );
+}
+
+/* Screenshot with caption. Click opens the full-size image in a new tab. */
+function Screenshot({ shot, featured, index }: { shot: Media; featured: boolean; index: number }) {
+  return (
+    <figure style={delay((index % 2) * 120)} className={`reveal ${featured ? "md:col-span-2" : ""}`}>
+      <a
+        href={shot.src}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-[border-color] duration-500 hover:border-sky-400/30"
+      >
+        <Image
+          src={shot.src}
+          alt={shot.alt}
+          width={shot.width}
+          height={shot.height}
+          sizes={featured ? "(min-width: 1280px) 1200px, 100vw" : "(min-width: 768px) 50vw, 100vw"}
+          className="h-auto w-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.01]"
+        />
+      </a>
+      {shot.caption && (
+        <figcaption className="mt-3 text-[13px] leading-relaxed text-zinc-500">{shot.caption}</figcaption>
+      )}
+    </figure>
   );
 }
