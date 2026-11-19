@@ -78,7 +78,7 @@ export default async function Home() {
           <dl style={delay(150)} className="reveal space-y-5 text-sm">
             <div>
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Focus</dt>
-              <dd className="mt-1.5 text-zinc-300">CRMs, sales funnels, billing, internal tools, real-time AI</dd>
+              <dd className="mt-1.5 text-zinc-300">CRMs, sales funnels, billing, internal tools, real-time AI, Claude integrations</dd>
             </div>
             <div>
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Main stack</dt>

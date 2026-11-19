@@ -1,7 +1,7 @@
 import type { CaseStudy, System } from "../types";
 
 export const SUMMARY =
-  "ProSpeak teaches English to Spanish-speaking professionals through levelled lessons (A1–B2) and real-time voice simulations in which the student interviews an AI character, such as a patient. Around the learning product I built the full business layer: a CRM for the sales team, an automated acquisition funnel, Stripe billing, channel analytics and a certification system.";
+  "ProSpeak teaches English to Spanish-speaking professionals through levelled lessons (A1–B2) and real-time voice simulations in which the student interviews an AI character, such as a patient. Around the learning product I built the full business layer: a CRM for the sales team, an automated acquisition funnel, Stripe billing, channel analytics, a certification system and a Claude integration that answers questions about the business from live data.";
 
 export const META = [
   { label: "Role", value: "Founder and sole engineer" },
@@ -29,7 +29,7 @@ export const STACK = [
       "bcrypt",
     ],
   },
-  { group: "AI & voice", items: ["Gemini Live API", "Deepgram", "MCP (Model Context Protocol)"] },
+  { group: "AI & voice", items: ["Gemini Live API", "Deepgram", "Claude integration (MCP)"] },
   { group: "Payments & email", items: ["Stripe", "Resend"] },
   { group: "Infrastructure", items: ["DigitalOcean", "Coolify", "Vercel", "Monitoring & logs"] },
 ];
@@ -163,7 +163,7 @@ export const SYSTEMS: System[] = [
   },
   {
     id: "claude-connector",
-    title: "Claude connector (MCP server)",
+    title: "Claude integration: MCP connector to live business data",
     intro:
       "I can ask Claude how the business is doing in plain Spanish and get answers from live production data, without opening the admin panel.",
     points: [
@@ -241,7 +241,7 @@ export const DECISIONS = [
     why: "The architecture supports both assisted sales and self-serve, and the admin panel compares them.",
   },
   {
-    choice: "A read-only MCP server instead of another dashboard",
+    choice: "A read-only Claude integration instead of another dashboard",
     why: "Ad-hoc questions about sales and reps get answered in a conversation, reusing the admin logic, with no way to change data.",
   },
   {
@@ -319,9 +319,9 @@ export const prospeak: CaseStudy = {
       "Self-serve and rep-led funnels, measured side by side",
       "Stripe billing that activates accounts and converts leads in one flow",
       "Real-time voice AI with server-side usage metering",
-      "Claude connector (MCP) to query the business from live data",
+      "Claude integration: ask Claude about sales and reps, answered from live data",
     ],
-    tags: ["Python", "FastAPI", "Next.js", "TypeScript", "WebSockets", "Stripe", "Gemini Live", "MCP", "DigitalOcean", "Coolify", "Vercel"],
+    tags: ["Python", "FastAPI", "Next.js", "TypeScript", "WebSockets", "Stripe", "Gemini Live", "Claude", "MCP", "DigitalOcean", "Coolify", "Vercel"],
   },
 
   meta: META,
