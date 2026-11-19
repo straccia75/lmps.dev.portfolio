@@ -1,21 +1,30 @@
 /*
   Hero visual: the ProSpeak pipeline as a live system.
-  Leads flow from the landing page to a certified student.
+  Leads flow from the landing page to a certified student; the admin site
+  collects the data and Claude queries it through a custom MCP connector.
   Pure SVG + CSS/SMIL animation, no JavaScript.
 */
 
-const NODES = [
-  { x: 110, y: 70, title: "Landing page", tag: "Acquisition" },
-  { x: 410, y: 70, title: "AI trial lesson", tag: "Voice AI" },
-  { x: 410, y: 230, title: "CRM", tag: "Sales rep" },
-  { x: 110, y: 230, title: "Stripe checkout", tag: "Webhook" },
-  { x: 110, y: 390, title: "Active student", tag: "Access granted" },
-  { x: 410, y: 390, title: "Certificate", tag: "Server-graded" },
+type Node = { x: number; y: number; title: string; tag: string; ai?: boolean };
+
+const NODES: Node[] = [
+  { x: 110, y: 62, title: "Landing page", tag: "Acquisition" },
+  { x: 410, y: 62, title: "AI trial lesson", tag: "Voice AI" },
+  { x: 410, y: 190, title: "CRM", tag: "Sales rep" },
+  { x: 110, y: 190, title: "Stripe checkout", tag: "Webhook" },
+  { x: 110, y: 318, title: "Active student", tag: "Access granted" },
+  { x: 410, y: 318, title: "Certificate", tag: "Server-graded" },
+  { x: 110, y: 456, title: "Admin site", tag: "Live metrics" },
+  { x: 410, y: 456, title: "Claude", tag: "Custom MCP", ai: true },
 ];
 
-// Snake path through the six nodes, with rounded corners
+// Snake path through the six pipeline nodes, with rounded corners
 const PATH =
-  "M110 70 H390 Q410 70 410 90 V210 Q410 230 390 230 H130 Q110 230 110 250 V370 Q110 390 130 390 H410";
+  "M110 62 H390 Q410 62 410 82 V170 Q410 190 390 190 H130 Q110 190 110 210 V298 Q110 318 130 318 H410";
+
+// Data feeding the admin site, and the MCP link between the admin site and Claude
+const FEED = "M260 318 V372 Q260 392 240 392 H130 Q110 392 110 412 V430";
+const MCP = "M182 456 H338";
 
 const PARTICLES = [0, 1.4, 2.8, 4.2, 5.6];
 
@@ -42,7 +51,12 @@ export function HeroSystem() {
           </span>
         </div>
 
-        <svg viewBox="0 0 520 460" className="block h-auto w-full" role="img" aria-label="ProSpeak pipeline: landing page, AI trial, CRM, Stripe, active student, certificate">
+        <svg
+          viewBox="0 0 520 510"
+          className="block h-auto w-full"
+          role="img"
+          aria-label="ProSpeak pipeline: landing page, AI trial, CRM, Stripe, active student, certificate. The admin site collects live metrics and Claude queries them through a custom MCP connector."
+        >
           <defs>
             <linearGradient id="flow" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="#38bdf8" />
@@ -52,6 +66,11 @@ export function HeroSystem() {
               <stop offset="0%" stopColor="#e0f2fe" />
               <stop offset="40%" stopColor="#38bdf8" />
               <stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="particle-ai">
+              <stop offset="0%" stopColor="#ede9fe" />
+              <stop offset="40%" stopColor="#a78bfa" />
+              <stop offset="100%" stopColor="#a78bfa" stopOpacity="0" />
             </radialGradient>
           </defs>
 
@@ -66,6 +85,31 @@ export function HeroSystem() {
             </circle>
           ))}
 
+          {/* data feed into the admin site */}
+          <path d={FEED} fill="none" stroke="rgba(56,189,248,0.35)" strokeWidth="1.5" strokeDasharray="3 5" />
+          <circle r="4" fill="url(#particle)">
+            <animateMotion dur="3.5s" repeatCount="indefinite" path={FEED} />
+          </circle>
+
+          {/* MCP link: Claude queries the admin data and gets answers back */}
+          <path d={MCP} fill="none" stroke="#a78bfa" strokeOpacity="0.5" strokeWidth="1.5" strokeDasharray="4 4" />
+          <text x="260" y="446" fill="#c4b5fd" fontSize="9" letterSpacing="0.2em" textAnchor="middle" fontFamily="inherit">
+            MCP
+          </text>
+          {[0, 1.3].map((begin) => (
+            <circle key={begin} r="5" fill="url(#particle-ai)">
+              <animateMotion
+                dur="2.6s"
+                repeatCount="indefinite"
+                begin={`-${begin}s`}
+                path={MCP}
+                keyPoints="0;1;0"
+                keyTimes="0;0.5;1"
+                calcMode="linear"
+              />
+            </circle>
+          ))}
+
           {/* nodes */}
           {NODES.map((n, i) => (
             <g key={n.title}>
@@ -76,18 +120,33 @@ export function HeroSystem() {
                 height="52"
                 rx="14"
                 fill="none"
-                stroke="#38bdf8"
+                stroke={n.ai ? "#a78bfa" : "#38bdf8"}
                 className="node-pulse"
                 style={{ "--delay": `${i * 450}ms` } as React.CSSProperties}
               />
-              <rect x={n.x - 72} y={n.y - 26} width="144" height="52" rx="14" fill="#0e0e14" stroke="rgba(255,255,255,0.12)" />
+              <rect
+                x={n.x - 72}
+                y={n.y - 26}
+                width="144"
+                height="52"
+                rx="14"
+                fill="#0e0e14"
+                stroke={n.ai ? "rgba(167,139,250,0.45)" : "rgba(255,255,255,0.12)"}
+              />
               <text x={n.x - 58} y={n.y - 4} fill="#ffffff" fontSize="13" fontWeight="500" fontFamily="inherit">
                 {n.title}
               </text>
-              <text x={n.x - 58} y={n.y + 13} fill="#71717a" fontSize="10" letterSpacing="0.06em" fontFamily="inherit">
+              <text
+                x={n.x - 58}
+                y={n.y + 13}
+                fill={n.ai ? "#c4b5fd" : "#71717a"}
+                fontSize="10"
+                letterSpacing="0.06em"
+                fontFamily="inherit"
+              >
                 {n.tag.toUpperCase()}
               </text>
-              <circle cx={n.x + 58} cy={n.y - 12} r="2.5" fill="#38bdf8" />
+              <circle cx={n.x + 58} cy={n.y - 12} r="2.5" fill={n.ai ? "#a78bfa" : "#38bdf8"} />
             </g>
           ))}
         </svg>
@@ -96,7 +155,7 @@ export function HeroSystem() {
         <div className="grid grid-cols-3 divide-x divide-white/5 border-t border-white/5">
           {[
             ["2", "funnels measured"],
-            ["1", "webhook flow"],
+            ["11", "Claude MCP tools"],
             ["24", "trial paths"],
           ].map(([v, l]) => (
             <div key={l} className="px-4 py-3">
