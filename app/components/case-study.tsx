@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { ContactActions, delay, Section, Tag } from "./site";
+import { CaseStudyNav } from "./case-study-nav";
 import { categoryLabel } from "../work/registry";
 import type { CaseStudy, Media, System } from "../work/types";
 
@@ -9,6 +10,15 @@ import type { CaseStudy, Media, System } from "../work/types";
 export function CaseStudyView({ study }: { study: CaseStudy }) {
   const numbered = new Map(study.groups.flatMap((g) => g.systems).map((s, i) => [s.id, i + 1]));
   const backHref = `/?area=${study.category}#work`;
+  const hasMedia = Boolean(study.media?.video || study.media?.screenshots?.length);
+
+  const sections = [
+    ...(hasMedia ? [{ id: "in-action", number: "", title: "See it working" }] : []),
+    { id: "flow", number: "01", title: study.flow.title },
+    { id: "architecture", number: "02", title: study.architecture.title },
+    { id: "systems", number: "03", title: "What I designed and built" },
+    { id: "decisions", number: "04", title: "Engineering trade-offs" },
+  ];
 
   return (
     <>
@@ -62,9 +72,57 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
         </div>
       </section>
 
+      {/* Contents: jump to any section or system */}
+      <Section id="contents" label="Contents" title="What you will find here">
+        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+          <nav aria-label="Sections" className="reveal">
+            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Sections</p>
+            <ol className="divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c11]/80">
+              {sections.map((s) => (
+                <li key={s.id}>
+                  <a
+                    href={`#${s.id}`}
+                    className="flex items-baseline gap-4 p-4 text-sm text-zinc-300 transition-colors duration-300 hover:bg-white/[0.03] hover:text-white"
+                  >
+                    <span className="w-5 shrink-0 font-mono text-xs text-sky-300/80">{s.number || "▶"}</span>
+                    <span>{s.title}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+
+          <nav aria-label="Systems" style={delay(120)} className="reveal">
+            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Systems</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {study.groups.map((g) => (
+                <div key={g.name} className="rounded-2xl border border-white/10 bg-[#0c0c11]/80 p-4">
+                  <p className="mb-2 text-xs font-medium text-white">{g.name}</p>
+                  <ul className="space-y-0.5">
+                    {g.systems.map((s) => (
+                      <li key={s.id}>
+                        <a
+                          href={`#${s.id}`}
+                          className="-mx-2 flex items-baseline gap-3 rounded-lg px-2 py-1.5 text-[13px] leading-snug text-zinc-400 transition-colors duration-300 hover:bg-white/[0.04] hover:text-white"
+                        >
+                          <span className="font-mono text-[11px] text-sky-300/70">
+                            {String(numbered.get(s.id) ?? 0).padStart(2, "0")}
+                          </span>
+                          <span>{s.title}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </nav>
+        </div>
+      </Section>
+
       {/* Product in action: demo video and screenshots (only if the project has them) */}
-      {Boolean(study.media?.video || study.media?.screenshots?.length) && study.media && (
-        <Section label="In action" title="See it working">
+      {hasMedia && study.media && (
+        <Section id="in-action" label="In action" title="See it working">
           <div className="space-y-6">
             {study.media.video && (
               <figure className="reveal">
@@ -102,7 +160,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
       )}
 
       {/* 01 · Flow */}
-      <Section label="01 · The flow" title={study.flow.title} intro={study.flow.intro}>
+      <Section id="flow" label="01 · The flow" title={study.flow.title} intro={study.flow.intro}>
         <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {study.flow.steps.map((j, i) => (
             <li
@@ -124,7 +182,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
       </Section>
 
       {/* 02 · Architecture */}
-      <Section label="02 · Architecture" title={study.architecture.title}>
+      <Section id="architecture" label="02 · Architecture" title={study.architecture.title}>
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="reveal space-y-4 text-[15px] leading-relaxed">
             {study.architecture.paragraphs.map((p) => (
@@ -148,6 +206,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
 
       {/* 03 · Systems */}
       <Section
+        id="systems"
         label="03 · Systems"
         title="What I designed and built"
         intro="Grouped by the part of the business they serve."
@@ -173,7 +232,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
       </Section>
 
       {/* 04 · Decisions */}
-      <Section label="04 · Decisions" title="Engineering trade-offs">
+      <Section id="decisions" label="04 · Decisions" title="Engineering trade-offs">
         <div className="divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c11]/80">
           {study.decisions.map((d) => (
             <div key={d.choice} className="reveal grid gap-1 p-5 sm:grid-cols-[0.9fr_1.1fr] sm:gap-8">
@@ -190,6 +249,8 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
           <ContactActions withLinkedIn={false} />
         </div>
       </Section>
+
+      <CaseStudyNav indexId="contents" />
     </>
   );
 }

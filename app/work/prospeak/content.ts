@@ -29,13 +29,13 @@ export const STACK = [
       "bcrypt",
     ],
   },
-  { group: "AI & voice", items: ["Gemini Live API", "Deepgram"] },
+  { group: "AI & voice", items: ["Gemini Live API", "Deepgram", "MCP (Model Context Protocol)"] },
   { group: "Payments & email", items: ["Stripe", "Resend"] },
   { group: "Infrastructure", items: ["DigitalOcean", "Coolify", "Vercel", "Monitoring & logs"] },
 ];
 
 export const FACTS = [
-  { value: "10", label: "subsystems designed and built" },
+  { value: "11", label: "subsystems designed and built" },
   { value: "24", label: "trial paths: 6 professions × 4 levels" },
   { value: "~10 KB", label: "custom WebGL avatar engine" },
   { value: "1", label: "engineer, from business model to deploy" },
@@ -68,7 +68,7 @@ export const GROUPS = [
   {
     name: "Sales and growth",
     description: "How students are acquired, and how the team sells.",
-    ids: ["acquisition", "trial-funnel", "crm", "admin"],
+    ids: ["acquisition", "trial-funnel", "crm", "admin", "claude-connector"],
   },
   {
     name: "Money and trust",
@@ -162,6 +162,22 @@ export const SYSTEMS: System[] = [
     ],
   },
   {
+    id: "claude-connector",
+    title: "Claude connector (MCP server)",
+    intro:
+      "I can ask Claude how the business is doing in plain Spanish and get answers from live production data, without opening the admin panel.",
+    points: [
+      "Remote MCP server mounted inside the existing FastAPI backend over Streamable HTTP. It is stateless with JSON responses, so it runs behind any proxy without session affinity.",
+      "11 tools: business overview, metric series, rep vs self-serve channels, the automated funnel, sales reps, rep performance, trial lessons, lead search, the full lead record, call priorities and unfinished payments.",
+      "Where the admin panel already computes a figure, the tool calls the same function, so Claude and the dashboard always show the same numbers.",
+      "Rep performance analysis: calls per day against the daily quota, weekdays without calls, how many hours the rep takes to call after a completed trial and which leads were never called, compared with the previous period and the team average, plus the call notes for review.",
+      "Call priority ranking: open leads scored by urgency (payment started but not finished, completed trial with no follow-up, marked as interested), with the reasons behind each score.",
+      "Server instructions give the model the domain rules: sales days on the Venezuela clock, lead statuses, channels and what a trial report contains.",
+      "Off by default: without a configured token of at least 32 characters the endpoint returns 404. Requests need a bearer token checked in constant time, rejected attempts are logged and every tool call is audited.",
+      "Every tool is read-only and declared as such. Date ranges and result sizes are capped, and notes and AI reports written by other people are passed to the model as data, never as instructions.",
+    ],
+  },
+  {
     id: "certification",
     title: "Server-graded certification",
     intro: "Grades and certificates are never decided by the client.",
@@ -223,6 +239,10 @@ export const DECISIONS = [
   {
     choice: "Two funnels measured in parallel",
     why: "The architecture supports both assisted sales and self-serve, and the admin panel compares them.",
+  },
+  {
+    choice: "A read-only MCP server instead of another dashboard",
+    why: "Ad-hoc questions about sales and reps get answered in a conversation, reusing the admin logic, with no way to change data.",
   },
   {
     choice: "SQLite in production during validation",
@@ -299,8 +319,9 @@ export const prospeak: CaseStudy = {
       "Self-serve and rep-led funnels, measured side by side",
       "Stripe billing that activates accounts and converts leads in one flow",
       "Real-time voice AI with server-side usage metering",
+      "Claude connector (MCP) to query the business from live data",
     ],
-    tags: ["Python", "FastAPI", "Next.js", "TypeScript", "WebSockets", "Stripe", "Gemini Live", "DigitalOcean", "Coolify", "Vercel"],
+    tags: ["Python", "FastAPI", "Next.js", "TypeScript", "WebSockets", "Stripe", "Gemini Live", "MCP", "DigitalOcean", "Coolify", "Vercel"],
   },
 
   meta: META,
