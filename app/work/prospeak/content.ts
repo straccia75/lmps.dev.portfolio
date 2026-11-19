@@ -165,7 +165,16 @@ export const SYSTEMS: System[] = [
     id: "claude-connector",
     title: "Claude integration: MCP connector to live business data",
     intro:
-      "I can ask Claude how the business is doing in plain Spanish and get answers from live production data, without opening the admin panel.",
+      "I can ask Claude how the business is doing in plain language and get answers from live production data, without opening the admin panel.",
+    video: {
+      src: "/work/prospeak/claude-connector.mp4",
+      poster: "/work/prospeak/claude-connector-poster.jpg",
+      alt: "Screen recording: Claude uses the ProSpeak connector to rank today's calls and review sales rep performance",
+      width: 1280,
+      height: 688,
+      caption:
+        "Asking Claude who to call first today and which sales reps are underperforming. Claude calls the connector's tools and answers from live data. Names are reduced to surnames and phone numbers are masked for the recording.",
+    },
     points: [
       "Remote MCP server mounted inside the existing FastAPI backend over Streamable HTTP. It is stateless with JSON responses, so it runs behind any proxy without session affinity.",
       "11 tools: business overview, metric series, rep vs self-serve channels, the automated funnel, sales reps, rep performance, trial lessons, lead search, the full lead record, call priorities and unfinished payments.",

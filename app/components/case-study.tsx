@@ -268,6 +268,27 @@ function SystemRow({ system, index }: { system: System; index: number }) {
           +
         </span>
       </summary>
+      {system.video && (
+        <figure className="px-5 pb-6 sm:pl-[3.25rem]">
+          <div className="overflow-hidden rounded-xl border border-white/10 bg-black">
+            <video
+              controls
+              playsInline
+              preload="none"
+              poster={system.video.poster}
+              width={system.video.width}
+              height={system.video.height}
+              aria-label={system.video.alt}
+              className="block h-auto w-full"
+            >
+              <source src={system.video.src} type="video/mp4" />
+            </video>
+          </div>
+          {system.video.caption && (
+            <figcaption className="mt-3 text-[13px] leading-relaxed text-zinc-500">{system.video.caption}</figcaption>
+          )}
+        </figure>
+      )}
       <ul className="space-y-2.5 px-5 pb-6 pl-[3.25rem]">
         {system.points.map((p) => (
           <li key={p} className="flex gap-3 text-[14px] leading-relaxed text-zinc-300">

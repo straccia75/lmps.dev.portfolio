@@ -11,6 +11,8 @@ export type System = {
   title: string;
   intro: string;
   points: string[];
+  /* Optional demo video shown inside the system, above its points */
+  video?: Media & { poster: string };
 };
 
 /* Image or video shown on the site. Files live in public/work/<slug>/ */
