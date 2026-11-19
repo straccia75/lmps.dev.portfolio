@@ -13,6 +13,7 @@ export type ProjectCard = {
   kicker: string;
   blurb: string;
   points: string[];
+  skills?: string[];
   tags: string[];
   thumbnail?: Media;
 };
@@ -154,6 +155,14 @@ function ProjectCardView({ project, index, wide }: { project: ProjectCard; index
         <div className="flex-1" />
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-5">
           <div className="flex flex-wrap gap-1.5">
+            {project.skills?.map((t) => (
+              <span
+                key={t}
+                className="rounded-md border border-sky-400/30 bg-sky-400/10 px-2 py-1 text-[11px] font-medium text-sky-200"
+              >
+                {t}
+              </span>
+            ))}
             {project.tags.map((t) => (
               <span key={t} className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[11px] text-zinc-300">
                 {t}

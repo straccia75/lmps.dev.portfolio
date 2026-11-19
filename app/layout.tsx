@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const SITE_URL = 'https://lmps.dev';
 const TITLE = 'Luigi Straccia | Software & Data Engineering';
 const DESCRIPTION =
-  'Full-stack engineer building CRMs, sales funnels, Stripe billing and real-time AI features, designed around how the business works.';
+  'Full-stack engineer building CRMs, sales funnels, Stripe billing, AI automation and custom MCP connectors for Claude, designed around how the business works.';
 
 // Icons and social images come from app/icon.png, app/apple-icon.png,
 // app/opengraph-image.png and app/twitter-image.png (Next.js file conventions).

@@ -166,15 +166,7 @@ export const SYSTEMS: System[] = [
     title: "Claude integration: MCP connector to live business data",
     intro:
       "I can ask Claude how the business is doing in plain language and get answers from live production data, without opening the admin panel.",
-    video: {
-      src: "/work/prospeak/claude-connector.mp4",
-      poster: "/work/prospeak/claude-connector-poster.jpg",
-      alt: "Screen recording: Claude uses the ProSpeak connector to rank today's calls and review sales rep performance",
-      width: 1280,
-      height: 688,
-      caption:
-        "Asking Claude who to call first today and which sales reps are underperforming. Claude calls the connector's tools and answers from live data. Names are reduced to surnames and phone numbers are masked for the recording.",
-    },
+    demo: "demo-claude",
     points: [
       "Remote MCP server mounted inside the existing FastAPI backend over Streamable HTTP. It is stateless with JSON responses, so it runs behind any proxy without session affinity.",
       "11 tools: business overview, metric series, rep vs self-serve channels, the automated funnel, sales reps, rep performance, trial lessons, lead search, the full lead record, call priorities and unfinished payments.",
@@ -294,6 +286,19 @@ export const prospeak: CaseStudy = {
       caption:
         "A trial voice simulation. The student plays the pediatrician and interviews Emily, an AI character, in real time, guided step by step through the consultation.",
     },
+    videos: [
+      {
+        id: "demo-claude",
+        title: "Claude integration in action",
+        src: "/work/prospeak/claude-connector.mp4",
+        poster: "/work/prospeak/claude-connector-poster.jpg",
+        alt: "Screen recording: Claude uses the ProSpeak connector to rank today's calls and review sales rep performance",
+        width: 1280,
+        height: 776,
+        caption:
+          "Asking Claude who to call first today and which sales reps are underperforming. Claude calls the connector's tools and answers from live production data. Names are reduced to surnames and phone numbers are masked for the recording.",
+      },
+    ],
     screenshots: [
       {
         src: "/work/prospeak/crm-leads.png",
@@ -330,7 +335,13 @@ export const prospeak: CaseStudy = {
       "Real-time voice AI with server-side usage metering",
       "Claude integration: ask Claude about sales and reps, answered from live data",
     ],
-    tags: ["Python", "FastAPI", "Next.js", "TypeScript", "WebSockets", "Stripe", "Gemini Live", "Claude", "MCP", "DigitalOcean", "Coolify", "Vercel"],
+    skills: ["AI Integration", "Claude & MCP", "Real-time Voice AI", "CRM Automation", "Sales Funnels", "Stripe Billing"],
+    tags: [
+      "Python",
+      "FastAPI",
+      "Next.js",
+      "TypeScript",
+    ],
   },
 
   meta: META,

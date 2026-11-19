@@ -10,10 +10,11 @@ import type { CaseStudy, Media, System } from "../work/types";
 export function CaseStudyView({ study }: { study: CaseStudy }) {
   const numbered = new Map(study.groups.flatMap((g) => g.systems).map((s, i) => [s.id, i + 1]));
   const backHref = `/?area=${study.category}#work`;
-  const hasMedia = Boolean(study.media?.video || study.media?.screenshots?.length);
+  const hasMedia = Boolean(study.media?.video || study.media?.videos?.length || study.media?.screenshots?.length);
 
   const sections = [
     ...(hasMedia ? [{ id: "in-action", number: "", title: "See it working" }] : []),
+    ...(study.media?.videos ?? []).map((v) => ({ id: v.id, number: "", title: v.title })),
     { id: "flow", number: "01", title: study.flow.title },
     { id: "architecture", number: "02", title: study.architecture.title },
     { id: "systems", number: "03", title: "What I designed and built" },
@@ -42,6 +43,18 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
         <p style={delay(350)} className="enter mt-3 max-w-2xl text-lg text-zinc-300">
           {study.tagline}
         </p>
+        {study.card.skills && study.card.skills.length > 0 && (
+          <div style={delay(400)} className="enter mt-5 flex flex-wrap gap-2">
+            {study.card.skills.map((s) => (
+              <span
+                key={s}
+                className="rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-medium text-sky-200"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+        )}
         <p style={delay(450)} className="enter mt-6 max-w-3xl text-[15px] leading-relaxed">
           {study.summary}
         </p>
@@ -147,6 +160,29 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                 )}
               </figure>
             )}
+
+            {study.media.videos?.map((v) => (
+              <figure key={v.id} id={v.id} className="reveal scroll-mt-24 pt-6">
+                <h3 className="mb-4 text-base font-medium text-white">{v.title}</h3>
+                <div className="overflow-hidden rounded-2xl border border-sky-400/20 bg-black shadow-[0_30px_80px_-30px_rgba(56,189,248,0.25)]">
+                  <video
+                    controls
+                    playsInline
+                    preload="metadata"
+                    poster={v.poster}
+                    width={v.width}
+                    height={v.height}
+                    aria-label={v.alt}
+                    className="block h-auto w-full"
+                  >
+                    <source src={v.src} type="video/mp4" />
+                  </video>
+                </div>
+                {v.caption && (
+                  <figcaption className="mt-3 max-w-3xl text-[13px] leading-relaxed text-zinc-500">{v.caption}</figcaption>
+                )}
+              </figure>
+            ))}
 
             {study.media.screenshots && study.media.screenshots.length > 0 && (
               <div className="grid gap-6 md:grid-cols-2">
@@ -288,6 +324,16 @@ function SystemRow({ system, index }: { system: System; index: number }) {
             <figcaption className="mt-3 text-[13px] leading-relaxed text-zinc-500">{system.video.caption}</figcaption>
           )}
         </figure>
+      )}
+      {system.demo && (
+        <div className="px-5 pb-4 pl-[3.25rem]">
+          <a
+            href={`#${system.demo}`}
+            className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1.5 text-xs font-medium text-sky-200 transition-colors duration-300 hover:bg-sky-400/20"
+          >
+            ▶ Watch the demo
+          </a>
+        </div>
       )}
       <ul className="space-y-2.5 px-5 pb-6 pl-[3.25rem]">
         {system.points.map((p) => (

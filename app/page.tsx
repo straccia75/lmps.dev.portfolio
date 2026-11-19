@@ -14,18 +14,18 @@ export default async function Home() {
       <section className="grid min-h-[calc(100dvh-5rem)] items-center gap-14 pb-20 pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pt-0">
         <div>
           <p style={delay(150)} className="enter mb-5 text-[11px] font-medium uppercase tracking-[0.28em] text-sky-300/90">
-            Luigi Straccia · Full-stack engineer
+            Luigi Straccia · Full-stack & AI integration engineer
           </p>
           <h1
             style={delay(250)}
             className="enter text-[2.5rem] font-semibold leading-[1.02] tracking-tight text-white sm:text-6xl xl:text-7xl"
           >
             I turn business logic
-            <span className="text-shimmer block pb-2">into production software.</span>
+            <span className="text-shimmer block pb-2">into software and AI automation.</span>
           </h1>
           <p style={delay(400)} className="enter mt-7 max-w-xl text-[15px] leading-relaxed sm:text-base">
-            CRMs, sales funnels, payment flows and real-time AI features, designed around how the business works and
-            built end to end.
+            CRMs, sales funnels, payment flows, real-time AI features and custom MCP connectors that let Claude work
+            with your business data. Designed around how the business works, built end to end and running in production.
           </p>
           <div style={delay(550)} className="enter mt-10 flex flex-col gap-3 sm:flex-row">
             <PrimaryButton href="/#work">
@@ -78,7 +78,7 @@ export default async function Home() {
           <dl style={delay(150)} className="reveal space-y-5 text-sm">
             <div>
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Focus</dt>
-              <dd className="mt-1.5 text-zinc-300">CRMs, sales funnels, billing, internal tools, real-time AI, Claude integrations</dd>
+              <dd className="mt-1.5 text-zinc-300">CRMs, sales funnels, billing, AI automation, custom MCP connectors</dd>
             </div>
             <div>
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Main stack</dt>

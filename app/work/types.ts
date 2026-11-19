@@ -13,7 +13,12 @@ export type System = {
   points: string[];
   /* Optional demo video shown inside the system, above its points */
   video?: Media & { poster: string };
+  /* Optional id of a video in "See it working" that demos this system (shows a "Watch the demo" link) */
+  demo?: string;
 };
+
+/* Extra demo video in "See it working", with its own heading and anchor */
+export type DemoVideo = Media & { poster: string; id: string; title: string };
 
 /* Image or video shown on the site. Files live in public/work/<slug>/ */
 export type Media = {
@@ -35,6 +40,7 @@ export type CaseStudy = {
   media?: {
     thumbnail?: Media;
     video?: Media & { poster: string };
+    videos?: DemoVideo[];
     screenshots?: Media[];
   };
 
@@ -43,6 +49,8 @@ export type CaseStudy = {
     kicker: string;
     blurb: string;
     points: string[];
+    /* Capabilities, highlighted in the accent colour before the tech tags */
+    skills?: string[];
     tags: string[];
   };
 
