@@ -1,6 +1,7 @@
 import '@/app/globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { getSiteMode } from './lib/site-mode';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
@@ -65,6 +66,7 @@ export default function RootLayout({
     <html lang="en" className="dark" data-scroll-behavior="smooth">
       <body className={`${inter.className} bg-[#07070a] antialiased text-zinc-400`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
