@@ -54,6 +54,36 @@ const DEMOS: Record<string, { path: string; id: string; word: string; label: str
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/*
+  Daily limit per browser, kept in localStorage. It stops casual overuse of
+  ElevenLabs credits; it is not a security measure (incognito resets it).
+*/
+const DAILY_LIMIT = 3;
+const USAGE_KEY = "ava-usage";
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function sessionsToday(): number {
+  try {
+    const raw = window.localStorage.getItem(USAGE_KEY);
+    if (!raw) return 0;
+    const u = JSON.parse(raw) as { date?: string; count?: number };
+    return u.date === today() && typeof u.count === "number" ? u.count : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function countSession() {
+  try {
+    window.localStorage.setItem(USAGE_KEY, JSON.stringify({ date: today(), count: sessionsToday() + 1 }));
+  } catch {
+    // storage unavailable (private mode, blocked): no limit, nothing to do
+  }
+}
+
 // Debug logs in the browser console, prefixed with [Ava]
 const log = (...args: unknown[]) => console.log("[Ava]", ...args);
 const logError = (...args: unknown[]) => console.error("[Ava]", ...args);
@@ -243,6 +273,7 @@ function AvaPanel() {
     clientTools,
     onConnect: (info: unknown) => {
       log("connected", info);
+      countSession();
       setError("");
       engineRef.current?.setActive(true);
       clearTimeout(sessionTimer.current);
@@ -300,8 +331,15 @@ function AvaPanel() {
     return () => cancelAnimationFrame(raf);
   }, [connected]);
 
+  const [limited, setLimited] = useState(false);
+
   const start = async () => {
     setError("");
+    if (sessionsToday() >= DAILY_LIMIT) {
+      log("daily limit reached", { limit: DAILY_LIMIT });
+      setLimited(true);
+      return;
+    }
     log("start: requesting microphone", { origin: window.location.origin });
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -411,6 +449,18 @@ function AvaPanel() {
               <p className="mt-2 line-clamp-3 text-center text-[13px] leading-relaxed text-zinc-300">{caption}</p>
             )}
             {error && <p className="mt-2 text-center text-[13px] text-rose-300">{error}</p>}
+            {limited && !connected && (
+              <div className="mt-3 text-center text-[13px] leading-relaxed text-zinc-300">
+                <p>You&apos;ve reached today&apos;s limit of conversations with Ava. Come back tomorrow, or reach Luigi directly.</p>
+                <a
+                  href="/#contact"
+                  onClick={() => setOpen(false)}
+                  className="mt-2 inline-block text-sky-300 underline-offset-4 hover:underline"
+                >
+                  Go to contact
+                </a>
+              </div>
+            )}
 
             <div className="mt-4 flex items-center justify-center gap-2">
               {connected || connecting ? (
