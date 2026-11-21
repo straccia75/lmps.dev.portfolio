@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ConversationProvider, useConversation } from "@elevenlabs/react";
 import { Mic, MicOff, PhoneOff, X } from "lucide-react";
-import { AvatarEngine, type Shape } from "./engine";
+import { AvatarEngine } from "./engine";
 
 /*
   Ava: voice assistant of the portfolio (ElevenLabs agent).
@@ -15,25 +15,41 @@ import { AvatarEngine, type Shape } from "./engine";
 
 const AGENT_ID = "agent_7801m7zw4k5cfegs546m86g5m83b";
 const MAX_SESSION_MS = 5 * 60 * 1000; // keeps ElevenLabs credits under control
-const SHAPE_HOLD_MS = 14000;
 
-const SECTION_SHAPES: Record<string, Shape> = {
-  "voice-gateway": "wave",
-  "simulation-engine": "wave",
-  "content-engine": "wave",
-  webgl: "wave",
-  crm: "funnel",
-  billing: "funnel",
-  acquisition: "funnel",
-  "trial-funnel": "funnel",
-  admin: "funnel",
-  certification: "funnel",
-  "claude-connector": "bridge",
+// Keyword the particles write when Ava shows a section
+const SECTION_WORDS: Record<string, string> = {
+  "voice-gateway": "VOICE AI",
+  "simulation-engine": "VOICE AI",
+  "trial-funnel": "FUNNEL",
+  crm: "CRM",
+  billing: "STRIPE",
+  acquisition: "FUNNEL",
+  admin: "ADMIN",
+  "claude-connector": "CLAUDE",
+  certification: "EXAMS",
+  "content-engine": "CONTENT",
+  webgl: "WEBGL",
+  producer: "API",
+  bronze: "SPARK",
+  "lake-sync": "GCS",
+  silver: "dbt",
+  gold: "BIGQUERY",
+  anomalies: "ANOMALIES",
+  "physics-tests": "TESTS",
+  "airport-check": "TESTS",
+  "model-tests": "TESTS",
+  architecture: "SYSTEM",
+  decisions: "DECISIONS",
 };
 
-const DEMOS: Record<string, { path: string; id: string; shape: Shape; label: string }> = {
-  "voice-simulation": { path: "/work/prospeak", id: "in-action", shape: "wave", label: "the ProSpeak voice simulation" },
-  "claude-connector": { path: "/work/prospeak", id: "demo-claude", shape: "bridge", label: "the Claude connector demo" },
+const PROJECT_WORDS: Record<string, string> = {
+  prospeak: "PROSPEAK",
+  "aviation-pipeline": "PIPELINE",
+};
+
+const DEMOS: Record<string, { path: string; id: string; word: string; label: string }> = {
+  "voice-simulation": { path: "/work/prospeak", id: "in-action", word: "VOICE AI", label: "the ProSpeak voice simulation" },
+  "claude-connector": { path: "/work/prospeak", id: "demo-claude", word: "CLAUDE", label: "the Claude connector demo" },
 };
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -85,7 +101,6 @@ function AvaPanel() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<AvatarEngine | null>(null);
-  const shapeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const sessionTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const [open, setOpen] = useState(false);
@@ -115,11 +130,7 @@ function AvaPanel() {
 
   /* ---------- helpers used by the tools ---------- */
 
-  const showShape = useCallback((s: Shape) => {
-    engineRef.current?.setShape(s);
-    clearTimeout(shapeTimer.current);
-    shapeTimer.current = setTimeout(() => engineRef.current?.setShape("sphere"), SHAPE_HOLD_MS);
-  }, []);
+  const showWord = useCallback((w: string) => engineRef.current?.showWord(w), []);
 
   // Wait until the route has changed and the element exists
   const waitFor = useCallback(async (path: string, id: string | null) => {
@@ -155,7 +166,7 @@ function AvaPanel() {
   const rawTools = useMemo(
     () => ({
       show_area: async ({ area }: { area: "software" | "data" }) => {
-        showShape(area === "data" ? "pipeline" : "funnel");
+        showWord(area === "data" ? "DATA" : "SOFTWARE");
         if (pathRef.current === "/") {
           window.dispatchEvent(new CustomEvent("work-area", { detail: area }));
           const url = new URL(window.location.href);
@@ -170,7 +181,7 @@ function AvaPanel() {
 
       open_case_study: async ({ project, section }: { project: string; section?: string }) => {
         const id = section && section !== "overview" ? section : null;
-        showShape(project === "aviation-pipeline" ? "pipeline" : (id && SECTION_SHAPES[id]) || "wave");
+        showWord((id && SECTION_WORDS[id]) || PROJECT_WORDS[project] || "WORK");
         const el = await goTo(`/work/${project}`, id);
         if (!el && id) {
           await goTo(`/work/${project}`, null);
@@ -182,7 +193,7 @@ function AvaPanel() {
       play_demo: async ({ demo }: { demo: string }) => {
         const d = DEMOS[demo];
         if (!d) return "That demo does not exist.";
-        showShape(d.shape);
+        showWord(d.word);
         const el = await goTo(d.path, d.id);
         const video = el?.querySelector("video");
         if (!video) return `Opened ${d.label}, but the video was not found.`;
@@ -197,12 +208,12 @@ function AvaPanel() {
       },
 
       go_to_contact: async () => {
-        showShape("logo");
+        showWord("HELLO");
         const el = await goTo("/", "contact");
         return el ? "The contact section is on screen." : "Could not open the contact section.";
       },
     }),
-    [goTo, showShape],
+    [goTo, showWord],
   );
 
   const clientTools = useMemo(() => {
@@ -211,6 +222,7 @@ function AvaPanel() {
     for (const [name, fn] of Object.entries(rawTools)) {
       wrapped[name] = async (params) => {
         log("tool call", name, params);
+        engineRef.current?.setState("thinking");
         try {
           const result = await (fn as unknown as ToolFn)(params);
           log("tool result", name, result);
@@ -218,6 +230,9 @@ function AvaPanel() {
         } catch (e) {
           logError("tool failed", name, e);
           return `The ${name} tool failed.`;
+        } finally {
+          const c = convRef.current;
+          engineRef.current?.setState(c.isSpeaking ? "speaking" : "listening");
         }
       };
     }
@@ -239,7 +254,7 @@ function AvaPanel() {
       if (reason && !/user|client|1000/i.test(reason)) setError(`Disconnected: ${reason}`);
       engineRef.current?.setActive(false);
       engineRef.current?.setLevel(0);
-      engineRef.current?.setShape("sphere");
+      engineRef.current?.setState("idle");
       clearTimeout(sessionTimer.current);
     },
     onError: (message: unknown, context?: unknown) => {
@@ -265,6 +280,11 @@ function AvaPanel() {
 
   const connected = conversation.status === "connected";
   const connecting = conversation.status === "connecting";
+
+  // Avatar state: sphere while listening, ring while speaking
+  useEffect(() => {
+    engineRef.current?.setState(!connected ? "idle" : conversation.isSpeaking ? "speaking" : "listening");
+  }, [connected, conversation.isSpeaking]);
 
   // Feed the audio level to the avatar
   useEffect(() => {

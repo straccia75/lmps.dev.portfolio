@@ -1,13 +1,14 @@
 /*
   Ava's avatar: a cloud of particles drawn on a 2D canvas.
-  - The cloud morphs between shapes (sphere, pipeline, wave, funnel, bridge, logo).
+  - State shapes: sphere (idle / listening), ring (speaking), orbit (thinking).
+  - showWord() writes a keyword with the particles for a few seconds (STRIPE, CRM, dbt...).
   - It reacts to the audio level of the conversation.
   - flyTo() sends a stream of particles from the avatar to an element of the page,
     drawn on a full-screen overlay canvas.
   No dependencies. Pauses when the tab is hidden.
 */
 
-export type Shape = "sphere" | "pipeline" | "wave" | "funnel" | "bridge" | "logo";
+export type AvatarState = "idle" | "listening" | "speaking" | "thinking";
 
 type Vec = { x: number; y: number; z: number };
 type Flyer = {
@@ -19,10 +20,7 @@ type Flyer = {
 const SKY = [56, 189, 248];
 const VIOLET = [167, 139, 250];
 
-// Shapes that look good rotating in 3D. The flat ones face the visitor.
-const SPINS: Record<Shape, boolean> = {
-  sphere: true, funnel: true, bridge: true, pipeline: false, wave: false, logo: false,
-};
+type ShapeKey = "sphere" | "ring" | "orbit" | `word:${string}`;
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -40,103 +38,67 @@ function sphere(n: number): Vec[] {
   return pts;
 }
 
-function alongPolyline(n: number, line: [number, number][], jitter: number): Vec[] {
-  const segs: { a: [number, number]; b: [number, number]; len: number }[] = [];
-  let total = 0;
-  for (let i = 0; i < line.length - 1; i++) {
-    const a = line[i], b = line[i + 1];
-    const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
-    segs.push({ a, b, len });
-    total += len;
-  }
+// Speaking: a flat ring facing the visitor, it pulses with the voice
+function ring(n: number): Vec[] {
   const pts: Vec[] = [];
   for (let i = 0; i < n; i++) {
-    let d = Math.random() * total;
-    const s = segs.find((sg) => (d -= sg.len) <= 0) ?? segs[segs.length - 1];
-    const k = Math.random();
-    pts.push({
-      x: s.a[0] + (s.b[0] - s.a[0]) * k + rand(-jitter, jitter),
-      y: s.a[1] + (s.b[1] - s.a[1]) * k + rand(-jitter, jitter),
-      z: rand(-0.12, 0.12),
-    });
+    const a = (i / n) * Math.PI * 2 + rand(-0.01, 0.01);
+    const r = 0.82 + rand(-0.07, 0.07);
+    pts.push({ x: Math.cos(a) * r, y: Math.sin(a) * r, z: rand(-0.06, 0.06) });
   }
   return pts;
 }
 
-// The snake of the pipeline diagram: top row to the right, down, bottom row back
-function pipeline(n: number): Vec[] {
-  return alongPolyline(
-    n,
-    [[-0.95, -0.38], [0.95, -0.38], [0.95, 0.38], [-0.95, 0.38]],
-    0.045,
-  );
-}
-
-function wave(n: number): Vec[] {
+// Thinking: three tilted orbits around a small core
+function orbit(n: number): Vec[] {
   const pts: Vec[] = [];
+  const tilts = [0.35, -0.6, 1.2];
   for (let i = 0; i < n; i++) {
-    const strand = i % 3;
-    const x = rand(-1, 1);
-    const env = Math.cos(x * Math.PI * 0.5);
-    const y = Math.sin(x * 7 + strand * 2.1) * 0.42 * env + rand(-0.03, 0.03);
-    pts.push({ x, y, z: (strand - 1) * 0.15 });
-  }
-  return pts;
-}
-
-function funnel(n: number): Vec[] {
-  const pts: Vec[] = [];
-  for (let i = 0; i < n; i++) {
-    const y = rand(-0.95, 0.95);
-    const r = 0.14 + 0.82 * Math.pow((0.95 - y) / 1.9, 1.4);
-    const a = rand(0, Math.PI * 2);
-    pts.push({ x: Math.cos(a) * r, y, z: Math.sin(a) * r });
-  }
-  return pts;
-}
-
-// Two nodes joined by a bridge of particles: Claude and the business data
-function bridge(n: number): Vec[] {
-  const pts: Vec[] = [];
-  for (let i = 0; i < n; i++) {
-    const k = i / n;
-    if (k < 0.75) {
-      const cx = k < 0.375 ? -0.62 : 0.62;
-      const u = rand(-1, 1), a = rand(0, Math.PI * 2), r = Math.sqrt(1 - u * u) * 0.32;
-      pts.push({ x: cx + Math.cos(a) * r, y: u * 0.32, z: Math.sin(a) * r });
-    } else {
-      const x = rand(-0.3, 0.3);
-      pts.push({ x, y: Math.sin((x + 0.3) * 10) * 0.04, z: rand(-0.04, 0.04) });
+    if (i % 5 === 0) {
+      const u = rand(-1, 1), a = rand(0, Math.PI * 2), r = Math.sqrt(1 - u * u) * 0.18;
+      pts.push({ x: Math.cos(a) * r, y: u * 0.18, z: Math.sin(a) * r });
+      continue;
     }
+    const t = tilts[i % 3];
+    const a = rand(0, Math.PI * 2);
+    const r = 0.85 + rand(-0.03, 0.03);
+    const x = Math.cos(a) * r, z = Math.sin(a) * r;
+    pts.push({ x, y: z * Math.sin(t), z: z * Math.cos(t) });
   }
   return pts;
 }
 
-function logo(n: number): Vec[] {
+// A word written with particles. Width is normalised to [-1, 1].
+function word(n: number, text: string): Vec[] {
   if (typeof document === "undefined") return sphere(n);
-  const w = 160, h = 80;
+  const font = "bold 90px system-ui, -apple-system, sans-serif";
+  const probe = document.createElement("canvas").getContext("2d");
+  if (!probe) return sphere(n);
+  probe.font = font;
+  const w = Math.ceil(probe.measureText(text).width) + 20;
+  const h = 110;
   const c = document.createElement("canvas");
-  c.width = w; c.height = h;
+  c.width = w;
+  c.height = h;
   const ctx = c.getContext("2d");
   if (!ctx) return sphere(n);
   ctx.fillStyle = "#fff";
-  ctx.font = "bold 72px system-ui, sans-serif";
+  ctx.font = font;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("LS", w / 2, h / 2 + 4);
+  ctx.fillText(text, w / 2, h / 2 + 4);
   const data = ctx.getImageData(0, 0, w, h).data;
   const filled: [number, number][] = [];
-  for (let y = 0; y < h; y += 1) for (let x = 0; x < w; x += 1) if (data[(y * w + x) * 4 + 3] > 128) filled.push([x, y]);
+  for (let y = 0; y < h; y += 2) for (let x = 0; x < w; x += 2) if (data[(y * w + x) * 4 + 3] > 128) filled.push([x, y]);
   if (!filled.length) return sphere(n);
   const pts: Vec[] = [];
   for (let i = 0; i < n; i++) {
     const [x, y] = filled[(Math.random() * filled.length) | 0];
-    pts.push({ x: (x / w - 0.5) * 2, y: (y / h - 0.5), z: rand(-0.08, 0.08) });
+    pts.push({ x: (x / w - 0.5) * 2, y: ((y / h - 0.5) * 2 * h) / w, z: rand(-0.05, 0.05) });
   }
   return pts;
 }
 
-const GENERATORS: Record<Shape, (n: number) => Vec[]> = { sphere, pipeline, wave, funnel, bridge, logo };
 
 /* ---------- engine ---------- */
 
@@ -145,9 +107,11 @@ export class AvatarEngine {
   private octx: CanvasRenderingContext2D;
   private n: number;
   private cur: Vec[];
-  private shapes: Partial<Record<Shape, Vec[]>> = {};
+  private shapes = new Map<ShapeKey, Vec[]>();
   private target: Vec[];
-  private shape: Shape = "sphere";
+  private shape: ShapeKey = "sphere";
+  private state: AvatarState = "idle";
+  private wordTimer: ReturnType<typeof setTimeout> | undefined;
   private angle = 0;
   private level = 0;
   private active = false;
@@ -181,15 +145,42 @@ export class AvatarEngine {
     this.start();
   }
 
-  private get(s: Shape) {
-    if (!this.shapes[s]) this.shapes[s] = GENERATORS[s](this.n);
-    return this.shapes[s]!;
+  private get(key: ShapeKey) {
+    let pts = this.shapes.get(key);
+    if (!pts) {
+      if (key === "ring") pts = ring(this.n);
+      else if (key === "orbit") pts = orbit(this.n);
+      else if (key.startsWith("word:")) pts = word(this.n, key.slice(5));
+      else pts = sphere(this.n);
+      this.shapes.set(key, pts);
+    }
+    return pts;
   }
 
-  setShape(s: Shape) {
-    if (s === this.shape) return;
-    this.shape = s;
-    this.target = this.get(s);
+  private apply(key: ShapeKey) {
+    if (key === this.shape) return;
+    this.shape = key;
+    this.target = this.get(key);
+  }
+
+  private stateShape(): ShapeKey {
+    return this.state === "speaking" ? "ring" : this.state === "thinking" ? "orbit" : "sphere";
+  }
+
+  /* idle / listening / speaking / thinking. A word on screen keeps priority. */
+  setState(s: AvatarState) {
+    this.state = s;
+    if (!this.wordTimer) this.apply(this.stateShape());
+  }
+
+  /* Write a keyword with the particles, then go back to the state shape */
+  showWord(text: string, ms = 4500) {
+    clearTimeout(this.wordTimer);
+    this.apply(`word:${text}`);
+    this.wordTimer = setTimeout(() => {
+      this.wordTimer = undefined;
+      this.apply(this.stateShape());
+    }, ms);
   }
 
   /* 0..1 audio level of whoever is talking */
@@ -230,6 +221,7 @@ export class AvatarEngine {
   }
 
   destroy() {
+    clearTimeout(this.wordTimer);
     this.stop();
     this.ro.disconnect();
     window.removeEventListener("resize", this.onResize);
@@ -276,7 +268,8 @@ export class AvatarEngine {
 
     // Spin the 3D shapes; turn the flat ones back to face the visitor
     const speed = this.slow ? 0.0015 : this.active ? 0.006 : 0.003;
-    if (SPINS[this.shape]) this.angle += speed;
+    const spins = this.shape === "sphere" || this.shape === "orbit";
+    if (spins) this.angle += this.shape === "orbit" ? speed * 3 : speed;
     else {
       this.angle = Math.atan2(Math.sin(this.angle), Math.cos(this.angle));
       this.angle *= 0.9;
@@ -284,7 +277,8 @@ export class AvatarEngine {
     const cos = Math.cos(this.angle), sin = Math.sin(this.angle);
 
     const breathe = 1 + Math.sin(time * 1.6) * 0.025;
-    const scale = Math.min(w, h) * (this.shape === "sphere" ? 0.34 : 0.42) * breathe;
+    const isWord = this.shape.startsWith("word:");
+    const scale = Math.min(w, h) * (isWord ? 0.46 : this.shape === "sphere" ? 0.34 : 0.38) * breathe;
     const cx = w / 2, cy = h / 2;
     const lvl = this.level;
     const morph = this.slow ? 0.04 : 0.075;
@@ -298,7 +292,7 @@ export class AvatarEngine {
       c.z += (tg.z - c.z) * morph;
 
       // audio: push particles outwards with a per-particle wobble
-      const wob = 1 + lvl * (0.18 + 0.22 * Math.sin(i * 12.9898 + time * 9));
+      const wob = 1 + lvl * (isWord ? 0.04 : 0.18 + 0.22 * Math.sin(i * 12.9898 + time * 9));
       const x = c.x * wob, y = c.y * wob, z = c.z * wob;
 
       const rx = x * cos - z * sin;
