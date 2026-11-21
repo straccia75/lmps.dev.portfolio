@@ -57,8 +57,12 @@ export type CaseStudy = {
   meta: { label: string; value: string }[];
   facts: { value: string; label: string }[];
 
-  /* Section 01: how things move through the system (customers, data, ...) */
-  flow: {
+  /* Optional links shown under the summary (repository, live site) */
+  links?: { label: string; href: string }[];
+
+  /* Section 01: how things move through the system (customers, data, ...).
+     Optional: a project with an architecture diagram tells the flow there instead. */
+  flow?: {
     title: string;
     intro: string;
     steps: { step: string; detail: string; actor: string }[];
@@ -67,11 +71,14 @@ export type CaseStudy = {
   /* Section 02 */
   architecture: {
     title: string;
+    /* Optional diagram drawn above the text. Key of a component in components/diagrams.tsx */
+    diagram?: "aviation-pipeline";
     paragraphs: string[];
     stack: { group: string; items: string[] }[];
   };
 
   /* Section 03: systems grouped by what they do */
+  systemsIntro?: string;
   groups: { name: string; description: string; systems: System[] }[];
 
   /* Section 04 */

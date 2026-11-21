@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { ContactActions, delay, Section, Tag } from "./site";
 import { CaseStudyNav } from "./case-study-nav";
+import { DIAGRAMS } from "./diagrams";
 import { categoryLabel } from "../work/registry";
 import type { CaseStudy, Media, System } from "../work/types";
 
@@ -12,13 +13,21 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
   const backHref = `/?area=${study.category}#work`;
   const hasMedia = Boolean(study.media?.video || study.media?.videos?.length || study.media?.screenshots?.length);
 
+  const Diagram = study.architecture.diagram ? DIAGRAMS[study.architecture.diagram] : null;
+
+  // Numbered sections. Without a flow section the numbering starts at Architecture.
+  const numberedSections = [
+    ...(study.flow ? [{ id: "flow", title: study.flow.title }] : []),
+    { id: "architecture", title: study.architecture.title },
+    { id: "systems", title: "What I designed and built" },
+    { id: "decisions", title: "Engineering trade-offs" },
+  ].map((s, i) => ({ ...s, number: String(i + 1).padStart(2, "0") }));
+  const num = (id: string) => numberedSections.find((s) => s.id === id)?.number ?? "";
+
   const sections = [
     ...(hasMedia ? [{ id: "in-action", number: "", title: "See it working" }] : []),
     ...(study.media?.videos ?? []).map((v) => ({ id: v.id, number: "", title: v.title })),
-    { id: "flow", number: "01", title: study.flow.title },
-    { id: "architecture", number: "02", title: study.architecture.title },
-    { id: "systems", number: "03", title: "What I designed and built" },
-    { id: "decisions", number: "04", title: "Engineering trade-offs" },
+    ...numberedSections,
   ];
 
   return (
@@ -58,6 +67,22 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
         <p style={delay(450)} className="enter mt-6 max-w-3xl text-[15px] leading-relaxed">
           {study.summary}
         </p>
+        {study.links && study.links.length > 0 && (
+          <div style={delay(500)} className="enter mt-6 flex flex-wrap gap-3">
+            {study.links.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.03] px-4 py-2 text-sm text-zinc-200 transition-colors duration-300 hover:border-white/30 hover:text-white"
+              >
+                {l.label}
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </a>
+            ))}
+          </div>
+        )}
 
         <dl
           style={delay(550)}
@@ -195,8 +220,9 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
         </Section>
       )}
 
-      {/* 01 · Flow */}
-      <Section id="flow" label="01 · The flow" title={study.flow.title} intro={study.flow.intro}>
+      {/* Flow (optional) */}
+      {study.flow && (
+      <Section id="flow" label={`${num("flow")} · The flow`} title={study.flow.title} intro={study.flow.intro}>
         <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {study.flow.steps.map((j, i) => (
             <li
@@ -216,9 +242,15 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
           ))}
         </ol>
       </Section>
+      )}
 
-      {/* 02 · Architecture */}
-      <Section id="architecture" label="02 · Architecture" title={study.architecture.title}>
+      {/* Architecture */}
+      <Section id="architecture" label={`${num("architecture")} · Architecture`} title={study.architecture.title}>
+        {Diagram && (
+          <div className="reveal mb-12">
+            <Diagram />
+          </div>
+        )}
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="reveal space-y-4 text-[15px] leading-relaxed">
             {study.architecture.paragraphs.map((p) => (
@@ -240,12 +272,12 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
         </div>
       </Section>
 
-      {/* 03 · Systems */}
+      {/* Systems */}
       <Section
         id="systems"
-        label="03 · Systems"
+        label={`${num("systems")} · Systems`}
         title="What I designed and built"
-        intro="Grouped by the part of the business they serve."
+        intro={study.systemsIntro ?? "Grouped by the part of the business they serve."}
       >
         <div className="space-y-12">
           {study.groups.map((g) => (
@@ -267,8 +299,8 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
         </div>
       </Section>
 
-      {/* 04 · Decisions */}
-      <Section id="decisions" label="04 · Decisions" title="Engineering trade-offs">
+      {/* Decisions */}
+      <Section id="decisions" label={`${num("decisions")} · Decisions`} title="Engineering trade-offs">
         <div className="divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c11]/80">
           {study.decisions.map((d) => (
             <div key={d.choice} className="reveal grid gap-1 p-5 sm:grid-cols-[0.9fr_1.1fr] sm:gap-8">

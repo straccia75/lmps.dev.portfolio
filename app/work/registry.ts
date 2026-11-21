@@ -1,5 +1,6 @@
 import type { CaseStudy, Category } from "./types";
 import { prospeak } from "./prospeak/content";
+import { aviationPipeline } from "./aviation-pipeline/content";
 
 export const CATEGORIES: { id: Category; label: string; short: string; empty: string }[] = [
   {
@@ -12,12 +13,12 @@ export const CATEGORIES: { id: Category; label: string; short: string; empty: st
     id: "data",
     label: "Data Engineering",
     short: "Data",
-    empty: "Aviation telemetry pipeline: Kafka, Spark, Google Cloud Storage, BigQuery and dbt. Case study in preparation.",
+    empty: "Pipelines, data modelling and analytics projects. In preparation.",
   },
 ];
 
 /* Order here is the order on the site. */
-export const PROJECTS: CaseStudy[] = [prospeak];
+export const PROJECTS: CaseStudy[] = [prospeak, aviationPipeline];
 
 export function categoryLabel(id: Category) {
   return CATEGORIES.find((c) => c.id === id)?.label ?? id;
