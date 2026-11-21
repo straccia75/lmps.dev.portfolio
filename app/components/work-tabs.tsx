@@ -24,10 +24,25 @@ type Tab = { id: Category; label: string; short: string; empty: string };
 export function WorkTabs({ tabs, projects }: { tabs: Tab[]; projects: ProjectCard[] }) {
   const [active, setActive] = useState<Category>(tabs[0].id);
 
-  // Open the tab requested in the URL (?area=data), e.g. when coming back from a case study
+  // Open the tab requested in the URL (?area=data), e.g. when coming back from a case study.
+  // #software and #data also work, for short links in proposals.
   useEffect(() => {
+    const isTab = (v: string | null): v is Category => !!v && tabs.some((t) => t.id === v);
     const area = new URLSearchParams(window.location.search).get("area");
-    if (area && tabs.some((t) => t.id === area)) setActive(area as Category);
+    const hash = window.location.hash.slice(1);
+    if (isTab(area)) setActive(area);
+    else if (isTab(hash)) {
+      setActive(hash);
+      document.getElementById("work")?.scrollIntoView();
+    }
+
+    // The hero entry points select a tab without reloading the page
+    const onArea = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      if (isTab(id)) setActive(id);
+    };
+    window.addEventListener("work-area", onArea);
+    return () => window.removeEventListener("work-area", onArea);
   }, [tabs]);
 
   const select = (id: Category) => {

@@ -12,7 +12,7 @@ export const CATEGORIES: { id: Category; label: string; short: string; empty: st
     id: "data",
     label: "Data Engineering",
     short: "Data",
-    empty: "Pipelines, data modelling and analytics projects. In preparation.",
+    empty: "Aviation telemetry pipeline: Kafka, Spark, Google Cloud Storage, BigQuery and dbt. Case study in preparation.",
   },
 ];
 
