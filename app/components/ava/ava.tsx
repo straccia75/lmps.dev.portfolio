@@ -89,6 +89,17 @@ function AvaPanel() {
   const sessionTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const [open, setOpen] = useState(false);
+  // Label next to the orb: appears shortly after load, hidden once Ava has been opened
+  const [hint, setHint] = useState(false);
+  const [opened, setOpened] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setHint(true), 1500);
+    return () => clearTimeout(t);
+  }, []);
+  const openPanel = () => {
+    setOpen(true);
+    setOpened(true);
+  };
   const [caption, setCaption] = useState("");
   const [error, setError] = useState("");
 
@@ -312,9 +323,28 @@ function AvaPanel() {
         className={`fixed bottom-4 right-4 z-50 transition-[width,border-radius] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:bottom-6 sm:right-6 ${
           open
             ? "w-[min(calc(100vw-2rem),340px)] overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0b0b10]/90 shadow-[0_40px_120px_-30px_rgba(56,189,248,0.45)] backdrop-blur-xl"
-            : "w-20"
+            : "w-24 sm:w-28"
         }`}
       >
+        {/* Who is this: label beside the orb while it is closed */}
+        {!open && !opened && (
+          <button
+            type="button"
+            onClick={openPanel}
+            className={`absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-2xl border border-white/10 bg-[#0b0b10]/90 px-4 py-2.5 text-left shadow-[0_20px_60px_-25px_rgba(56,189,248,0.6)] backdrop-blur-xl transition-[opacity,translate] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-sky-400/30 ${
+              hint ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-3 opacity-0"
+            }`}
+          >
+            <span className="flex items-center gap-2 text-sm font-medium text-white">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-sky-400" />
+              </span>
+              Talk with Ava
+            </span>
+            <span className="mt-0.5 block text-[11px] text-zinc-400">Luigi&apos;s AI voice assistant</span>
+          </button>
+        )}
         {open && (
           <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
             <div>
@@ -335,15 +365,22 @@ function AvaPanel() {
         {/* Avatar: the same canvas, small when closed and large when open */}
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={openPanel}
           disabled={open}
           aria-label={open ? "Ava" : "Talk with Ava, Luigi's voice assistant"}
           className={`relative block w-full ${
             open
               ? "h-56 cursor-default"
-              : "h-20 rounded-full border border-white/10 bg-[#0b0b10]/80 shadow-[0_20px_60px_-20px_rgba(56,189,248,0.6)] backdrop-blur-xl transition-transform duration-500 hover:scale-105"
+              : "h-24 rounded-full border border-white/10 bg-[#0b0b10]/80 shadow-[0_20px_60px_-20px_rgba(56,189,248,0.6)] backdrop-blur-xl transition-transform duration-500 hover:scale-105 sm:h-28"
           }`}
         >
+          {/* soft pulse so the orb reads as something to click */}
+          {!open && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -inset-1 rounded-full border border-sky-400/40 motion-safe:animate-[ping_2.6s_cubic-bezier(0,0,0.2,1)_infinite]"
+            />
+          )}
           <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
         </button>
 
