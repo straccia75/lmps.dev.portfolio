@@ -84,6 +84,13 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
           </div>
         )}
 
+        {/* Diagram first: for a pipeline the architecture is the quickest summary */}
+        {Diagram && (
+          <div style={delay(550)} className="enter mt-12">
+            <Diagram />
+          </div>
+        )}
+
         <dl
           style={delay(550)}
           className="enter mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:grid-cols-3"
@@ -246,11 +253,6 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
 
       {/* Architecture */}
       <Section id="architecture" label={`${num("architecture")} · Architecture`} title={study.architecture.title}>
-        {Diagram && (
-          <div className="reveal mb-12">
-            <Diagram />
-          </div>
-        )}
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="reveal space-y-4 text-[15px] leading-relaxed">
             {study.architecture.paragraphs.map((p) => (
