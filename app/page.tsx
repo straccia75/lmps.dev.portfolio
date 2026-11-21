@@ -3,7 +3,7 @@ import { AreaDoors } from "./components/area-doors";
 import { getSiteMode } from "./lib/site-mode";
 import { WorkTabs } from "./components/work-tabs";
 import { CATEGORIES, PROJECTS } from "./work/registry";
-import { HeroSystem } from "./components/hero-system";
+import { HeroShowcase } from "./components/hero-showcase";
 
 export default async function Home() {
   const mode = await getSiteMode();
@@ -40,7 +40,7 @@ export default async function Home() {
         </div>
 
         <div style={delay(500)} className="enter mx-auto hidden w-full max-w-[560px] sm:block">
-          <HeroSystem />
+          <HeroShowcase />
         </div>
       </section>
 

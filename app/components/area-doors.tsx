@@ -33,6 +33,10 @@ export function AreaDoors() {
     document.getElementById("work")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Tell the hero visual which system to show
+  const hover = (id: Category | null) =>
+    window.dispatchEvent(new CustomEvent<Category | null>("hero-area", { detail: id }));
+
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {DOORS.map((d) => (
@@ -40,6 +44,10 @@ export function AreaDoors() {
           key={d.id}
           href={`/?area=${d.id}#work`}
           onClick={(e) => open(e, d.id)}
+          onMouseEnter={() => hover(d.id)}
+          onMouseLeave={() => hover(null)}
+          onFocus={() => hover(d.id)}
+          onBlur={() => hover(null)}
           className="spotlight group flex flex-col rounded-2xl border border-white/10 bg-[#0c0c11]/80 p-5 backdrop-blur-xl transition-[border-color,box-shadow,translate] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-sky-400/30 hover:shadow-[0_30px_80px_-30px_rgba(56,189,248,0.35)]"
         >
           <p className="text-sm font-semibold text-white">{d.label}</p>
