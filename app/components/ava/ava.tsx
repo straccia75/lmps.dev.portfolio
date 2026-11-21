@@ -282,8 +282,10 @@ function AvaPanel() {
       return;
     }
     try {
-      log("startSession", { agentId: AGENT_ID });
-      const id = await conversation.startSession({ agentId: AGENT_ID });
+      // WebSocket: the browser connects straight to ElevenLabs and sends its real Origin,
+      // so the domain allowlist works. With WebRTC (LiveKit) the allowlist check failed.
+      log("startSession", { agentId: AGENT_ID, connectionType: "websocket" });
+      const id = await conversation.startSession({ agentId: AGENT_ID, connectionType: "websocket" });
       log("session started", id);
     } catch (e) {
       logError("startSession failed", e);
