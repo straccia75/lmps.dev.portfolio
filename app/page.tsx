@@ -89,7 +89,7 @@ export default async function Home() {
             </div>
             <div>
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Based in</dt>
-              <dd className="mt-1.5 text-zinc-300">Italy</dd>
+              <dd className="mt-1.5 text-zinc-300">Bogotá, Colombia</dd>
             </div>
           </dl>
         </div>
