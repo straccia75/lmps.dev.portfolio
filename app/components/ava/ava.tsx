@@ -38,6 +38,34 @@ const DEMOS: Record<string, { path: string; id: string; shape: Shape; label: str
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// Debug logs in the browser console, prefixed with [Ava]
+const log = (...args: unknown[]) => console.log("[Ava]", ...args);
+const logError = (...args: unknown[]) => console.error("[Ava]", ...args);
+
+// Best-effort readable reason from SDK disconnect/error payloads
+function reasonOf(x: unknown): string {
+  if (!x) return "";
+  if (typeof x === "string") return x;
+  if (x instanceof Error) return x.message;
+  if (typeof x === "object") {
+    const o = x as Record<string, unknown>;
+    for (const k of ["message", "reason", "closeReason", "error"]) {
+      const v = o[k];
+      if (typeof v === "string" && v) return v;
+      if (v && typeof v === "object") {
+        const inner = reasonOf(v);
+        if (inner) return inner;
+      }
+    }
+    try {
+      return JSON.stringify(x);
+    } catch {
+      return "";
+    }
+  }
+  return String(x);
+}
+
 export function Ava() {
   return (
     <ConversationProvider>
@@ -113,7 +141,7 @@ function AvaPanel() {
 
   /* ---------- client tools: names must match the agent configuration ---------- */
 
-  const clientTools = useMemo(
+  const rawTools = useMemo(
     () => ({
       show_area: async ({ area }: { area: "software" | "data" }) => {
         showShape(area === "data" ? "pipeline" : "funnel");
@@ -166,22 +194,48 @@ function AvaPanel() {
     [goTo, showShape],
   );
 
+  const clientTools = useMemo(() => {
+    const wrapped: Record<string, (p: never) => Promise<string>> = {};
+    for (const [name, fn] of Object.entries(rawTools)) {
+      wrapped[name] = async (params: never) => {
+        log("tool call", name, params);
+        try {
+          const result = await (fn as (p: never) => Promise<string>)(params);
+          log("tool result", name, result);
+          return result;
+        } catch (e) {
+          logError("tool failed", name, e);
+          return `The ${name} tool failed.`;
+        }
+      };
+    }
+    return wrapped;
+  }, [rawTools]);
+
   const conversation = useConversation({
     clientTools,
-    onConnect: () => {
+    onConnect: (info: unknown) => {
+      log("connected", info);
       setError("");
       engineRef.current?.setActive(true);
       clearTimeout(sessionTimer.current);
       sessionTimer.current = setTimeout(() => void convRef.current.endSession(), MAX_SESSION_MS);
     },
-    onDisconnect: () => {
+    onDisconnect: (details: unknown) => {
+      log("disconnected", details);
+      const reason = reasonOf(details);
+      if (reason && !/user|client|1000/i.test(reason)) setError(`Disconnected: ${reason}`);
       engineRef.current?.setActive(false);
       engineRef.current?.setLevel(0);
       engineRef.current?.setShape("sphere");
       clearTimeout(sessionTimer.current);
     },
-    onError: () => setError("Something went wrong. Please try again."),
+    onError: (message: unknown, context?: unknown) => {
+      logError("error", message, context);
+      setError(reasonOf(message) || "Something went wrong. Please try again.");
+    },
     onMessage: (m: unknown) => {
+      log("message", m);
       if (m && typeof m === "object" && "source" in m && "message" in m) {
         const { source, message } = m as { source: string; message: unknown };
         if (source === "ai" && typeof message === "string") setCaption(message);
@@ -192,6 +246,10 @@ function AvaPanel() {
   useEffect(() => {
     convRef.current = conversation;
   });
+
+  useEffect(() => {
+    log("status", conversation.status);
+  }, [conversation.status]);
 
   const connected = conversation.status === "connected";
   const connecting = conversation.status === "connecting";
@@ -212,17 +270,23 @@ function AvaPanel() {
 
   const start = async () => {
     setError("");
+    log("start: requesting microphone", { origin: window.location.origin });
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      log("microphone ok", stream.getAudioTracks().map((t) => t.label));
       stream.getTracks().forEach((t) => t.stop());
-    } catch {
+    } catch (e) {
+      logError("microphone denied", e);
       setError("Ava needs microphone access to talk with you.");
       return;
     }
     try {
-      await conversation.startSession({ agentId: AGENT_ID });
-    } catch {
-      setError("Could not connect. Please try again.");
+      log("startSession", { agentId: AGENT_ID });
+      const id = await conversation.startSession({ agentId: AGENT_ID });
+      log("session started", id);
+    } catch (e) {
+      logError("startSession failed", e);
+      setError(reasonOf(e) || "Could not connect. Please try again.");
     }
   };
 
