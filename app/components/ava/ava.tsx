@@ -195,12 +195,13 @@ function AvaPanel() {
   );
 
   const clientTools = useMemo(() => {
-    const wrapped: Record<string, (p: never) => Promise<string>> = {};
+    type ToolFn = (params: Record<string, unknown>) => Promise<string>;
+    const wrapped: Record<string, ToolFn> = {};
     for (const [name, fn] of Object.entries(rawTools)) {
-      wrapped[name] = async (params: never) => {
+      wrapped[name] = async (params) => {
         log("tool call", name, params);
         try {
-          const result = await (fn as (p: never) => Promise<string>)(params);
+          const result = await (fn as unknown as ToolFn)(params);
           log("tool result", name, result);
           return result;
         } catch (e) {
