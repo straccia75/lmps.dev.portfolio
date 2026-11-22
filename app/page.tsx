@@ -69,13 +69,19 @@ export default async function Home() {
         <div className="grid gap-10 md:grid-cols-[1.3fr_0.7fr]">
           <div className="reveal space-y-4 text-[15px] leading-relaxed">
             <p>
-              Before I moved into engineering, I spent five years in B2B sales, customer operations and real-time
-              workforce management, working in Salesforce and Zoho every day.
+              Before I moved into engineering, I spent five years in B2B sales, sales training and customer
+              operations, working in Salesforce and Zoho every day. At a New York funding company I trained a
+              45-person outbound team, wrote its first sales playbook and cut new-agent ramp-up from six weeks to
+              three.
             </p>
             <p>
               That is where my software starts: who owns a lead, when a commission is earned, what happens when a
               payment is abandoned, what a manager needs to see at the end of the day. I define those rules first,
               then build software that enforces them.
+            </p>
+            <p>
+              Today I run ProSpeak, an EdTech business I planned, coded and launched myself, from the platform to
+              the cold-call scripts the sales team works with.
             </p>
           </div>
           <dl style={delay(150)} className="reveal space-y-5 text-sm">
