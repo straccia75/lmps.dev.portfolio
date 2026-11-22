@@ -353,8 +353,14 @@ function AvaPanel() {
     try {
       // WebSocket: the browser connects straight to ElevenLabs and sends its real Origin,
       // so the domain allowlist works. With WebRTC (LiveKit) the allowlist check failed.
-      log("startSession", { agentId: AGENT_ID, connectionType: "websocket" });
-      const id = await conversation.startSession({ agentId: AGENT_ID, connectionType: "websocket" });
+      // Tells Ava where she is: booking calls only on lmps.dev, never on upwork.lmps.dev
+      // (same host rule as app/lib/site-mode.ts), plus the visitor's time zone for the slots.
+      const dynamicVariables = {
+        site_mode: window.location.hostname.toLowerCase().startsWith("upwork.") ? "upwork" : "main",
+        visitor_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown",
+      };
+      log("startSession", { agentId: AGENT_ID, connectionType: "websocket", dynamicVariables });
+      const id = await conversation.startSession({ agentId: AGENT_ID, connectionType: "websocket", dynamicVariables });
       log("session started", id);
     } catch (e) {
       logError("startSession failed", e);
